@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,45 +17,42 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Fetch all users
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    // Register a new user
+    @PostMapping("/register")
+    public ResponseEntity<User> registerUser(@RequestBody User newUser) {
+        if (userService.findByUsername(newUser.getUsername()) != null) {
+            return ResponseEntity.badRequest().body(null); // Username already exists
+        }
+        User registeredUser = userService.saveUser(newUser);
+        return ResponseEntity.ok(registeredUser);
     }
 
-    // Fetch a user by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
+    // Fetch the logged-in user's profile
+    @GetMapping("/me")
+    public ResponseEntity<User> getMyProfile(Principal principal) {
+        return Optional.ofNullable(userService.findByUsername(principal.getName()))
                 .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Create a new user
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
-    }
-
-    // Update a user
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        return userService.getUserById(id).map(user -> {
+    // Update the logged-in user's profile
+    @PutMapping("/me")
+    public ResponseEntity<User> updateMyProfile(@RequestBody User userDetails, Principal principal) {
+        return Optional.ofNullable(userService.findByUsername(principal.getName())).map(user -> {
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
-            // ... (update other properties like password after proper checks)
+            // ... (update other properties)
             User updatedUser = userService.saveUser(user);
             return ResponseEntity.ok(updatedUser);
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    // Delete a user
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        return userService.getUserById(id).map(user -> {
-            userService.deleteUser(id);
+    // User might delete their own account
+    @DeleteMapping("/me")
+    public ResponseEntity<?> deleteMyProfile(Principal principal) {
+        return Optional.ofNullable(userService.findByUsername(principal.getName())).map(user -> {
+            userService.deleteUser(user.getId());
             return ResponseEntity.ok().build();
         }).orElse(ResponseEntity.notFound().build());
     }
-
 }

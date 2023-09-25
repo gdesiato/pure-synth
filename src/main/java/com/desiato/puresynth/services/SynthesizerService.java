@@ -1,4 +1,4 @@
-package com.desiato.tuningsystems.services;
+package com.desiato.puresynth.services;
 
 import org.springframework.stereotype.Service;
 

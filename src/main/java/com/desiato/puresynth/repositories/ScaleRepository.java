@@ -1,6 +1,6 @@
-package com.desiato.tuningsystems.repositories;
+package com.desiato.puresynth.repositories;
 
-import com.desiato.tuningsystems.models.Scale;
+import com.desiato.puresynth.models.Scale;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

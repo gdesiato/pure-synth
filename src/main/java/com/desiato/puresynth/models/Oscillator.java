@@ -1,4 +1,4 @@
-package com.desiato.tuningsystems.models;
+package com.desiato.puresynth.models;
 
 import jakarta.persistence.Entity;
 import lombok.Data;

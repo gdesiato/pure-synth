@@ -1,10 +1,10 @@
-package com.desiato.tuningsystems;
+package com.desiato.puresynth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TuningSystemsApplicationTests {
+class PureSynthApplicationTests {
 
 	@Test
 	void contextLoads() {

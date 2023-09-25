@@ -1,7 +1,7 @@
-package com.desiato.tuningsystems.services;
+package com.desiato.puresynth.services;
 
-import com.desiato.tuningsystems.models.Scale;
-import com.desiato.tuningsystems.repositories.ScaleRepository;
+import com.desiato.puresynth.models.Scale;
+import com.desiato.puresynth.repositories.ScaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,17 +1,21 @@
-package com.desiato.tuningsystems.models;
+package com.desiato.puresynth.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "roles")
 @Data
-public class Role {
+public class TuningSystem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(length = 1000)
+    private String description;
+
 
 }

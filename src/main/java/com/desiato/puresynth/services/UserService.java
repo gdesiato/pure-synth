@@ -1,7 +1,7 @@
-package com.desiato.tuningsystems.services;
+package com.desiato.puresynth.services;
 
-import com.desiato.tuningsystems.models.User;
-import com.desiato.tuningsystems.repositories.UserRepository;
+import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

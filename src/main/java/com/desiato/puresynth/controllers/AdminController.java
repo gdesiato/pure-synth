@@ -1,7 +1,7 @@
-package com.desiato.tuningsystems.controllers;
+package com.desiato.puresynth.controllers;
 
-import com.desiato.tuningsystems.models.User;
-import com.desiato.tuningsystems.services.UserService;
+import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

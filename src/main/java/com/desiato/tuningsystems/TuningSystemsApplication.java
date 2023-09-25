@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TuningSystemsApplication {
 
 	public static void main(String[] args) {
+
+		System.loadLibrary("libs/libpdnative");
 		SpringApplication.run(TuningSystemsApplication.class, args);
 	}
 

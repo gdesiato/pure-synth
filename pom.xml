@@ -53,6 +53,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.puredata</groupId>
+			<artifactId>libpd</artifactId>
+			<version>your-library-version</version>
+			<scope>system</scope>
+			<systemPath>/Users/giuseppedesiato/Documents/tuning-systems/libs/libpd.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>

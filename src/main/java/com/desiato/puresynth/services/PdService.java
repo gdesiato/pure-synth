@@ -51,4 +51,12 @@ public class PdService {
             PdBase.closePatch(patchHandle);
         }
     }
+
+    public void sendMessageToPatch(String receiverName, float value) {
+        PdBase.sendFloat(receiverName, value);
+    }
+
+    public void setFrequency(float frequencyValue) {
+        PdBase.sendFloat("freq_slider", frequencyValue);
+    }
 }

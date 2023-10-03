@@ -3,6 +3,7 @@ package com.desiato.puresynth.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -22,10 +23,14 @@ public class User {
     @Column(nullable = false)
     private String password;  // Remember to hash and salt passwords before storing!
 
-    // Assuming that user preferences are a set of strings (like 'Piano', 'EqualTemperament')
-    // This can be refined further based on specific requirements.
     @ElementCollection
     private Set<String> userPreferences;
 
+    // This part is the relationship between User and Role
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
 }

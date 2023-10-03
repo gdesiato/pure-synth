@@ -3,6 +3,7 @@ package com.desiato.puresynth.services;
 import com.desiato.puresynth.models.PdReceiverAdapter;
 import org.puredata.core.PdBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -15,8 +16,12 @@ public class PdService {
     private PdReceiverAdapter pdReceiverAdapter;
 
     private int patchHandle;
+    private String patchPath;
 
-    public PdService() {
+
+    public PdService(@Value("${puredata.patch.path}") String patchPath) {
+        this.patchPath = patchPath;
+
         try {
             // Initialize libpd.
             PdBase.openAudio(1, 2, 44100);
@@ -25,7 +30,7 @@ public class PdService {
             PdBase.setReceiver(new PdReceiverAdapter());
 
             // Load a patch.
-            File patchFile = new File("");
+            File patchFile = new File(patchPath);
             patchHandle = PdBase.openPatch(patchFile.getAbsolutePath());
         } catch (IOException e) {
             // Handle exceptions.

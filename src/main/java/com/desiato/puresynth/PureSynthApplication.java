@@ -8,7 +8,8 @@ public class PureSynthApplication {
 
 	public static void main(String[] args) {
 
-		System.loadLibrary("libs/libpdnative");
+		System.load("/Users/giuseppedesiato/Documents/tuning-systems/libs/libpdnative.jnilib");
+		//System.loadLibrary("libs/libpdnative");
 		SpringApplication.run(PureSynthApplication.class, args);
 	}
 

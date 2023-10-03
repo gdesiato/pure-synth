@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frequency Controller</title>
+</head>
+<body>
+<h2>Set Frequency</h2>
+<input type="range" id="frequencySlider" min="20" max="2000" value="440">
+<button onclick="setFrequency()">Set Frequency</button>
+
+<script>
+        function setFrequency() {
+            const frequency = document.getElementById('frequencySlider').value;
+
+            fetch('/audio/setFrequency', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'frequency=' + frequency
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            });
+        }
+    </script>
+</body>
+</html>

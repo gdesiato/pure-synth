@@ -1,7 +1,9 @@
 package com.desiato.puresynth.models;
 
 import org.puredata.core.PdReceiver;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PdReceiverAdapter implements PdReceiver {
 
     @Override

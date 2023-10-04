@@ -32,18 +32,29 @@ public class PdService {
     @PostConstruct
     public void init() {
         try {
-            // Initialize libpd.
-            PdBase.openAudio(1, 2, 44100);
+            logger.info("Initializing PdService");
+
+            try {
+                logger.info("Attempting to open audio with libpd...");
+                PdBase.openAudio(1, 2, 44100);
+                logger.info("Audio opened successfully with libpd.");
+            } catch (Exception e) {
+                logger.error("Failed to open audio with libpd.", e);
+                throw e;
+            }
 
             // Set a receiver to handle messages from Pd.
+            logger.info("Setting receiver for PdBase");
             PdBase.setReceiver(new PdReceiverAdapter());
 
             // Load a patch.
+            logger.info("Loading patch from path: {}", patchPath);
             File patchFile = new File(patchPath);
             patchHandle = PdBase.openPatch(patchFile.getAbsolutePath());
+            logger.info("Patch loaded successfully.");
+
         } catch (IOException e) {
-            // Log the exception.
-            logger.error("Error during PdService initialization", e);
+            logger.error("Error initializing PdService", e);
         }
     }
 

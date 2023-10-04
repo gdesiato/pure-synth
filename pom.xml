@@ -15,8 +15,6 @@
 	<description>Mapping and calculating the frequencies for different tuning systems</description>
 	<properties>
 		<java.version>17</java.version>
-		<libpd.path>/Users/giuseppedesiato/Documents/tuning-systems/libs/libpd.jar</libpd.path>
-
 	</properties>
 
 
@@ -77,16 +75,7 @@
 		<dependency>
 			<groupId>org.puredata</groupId>
 			<artifactId>libpd</artifactId>
-			<version>your-library-version</version>
-			<scope>system</scope>
-			<systemPath>/Users/giuseppedesiato/Documents/tuning-systems/libs/libpd.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>org.puredata</groupId>
-			<artifactId>libpd</artifactId>
-			<version>unknown</version>
-			<scope>system</scope>
-			<systemPath>${libpd.path}</systemPath>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

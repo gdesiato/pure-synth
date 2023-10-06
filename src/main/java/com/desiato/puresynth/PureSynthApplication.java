@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PureSynthApplication {
 	private static final Logger logger = LoggerFactory.getLogger(PureSynthApplication.class);
 
+
 	static {
 		logger.info("Attempting to load libpdnative using loadLibrary");
 		try {
@@ -25,5 +26,6 @@ public class PureSynthApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PureSynthApplication.class, args);
+
 	}
 }

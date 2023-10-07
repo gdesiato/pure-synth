@@ -13,16 +13,13 @@ public class PureSynthApplication {
 	static {
 		logger.info("Attempting to load libpdnative using loadLibrary");
 		try {
+			// Where does Java look for the library?
 			logger.info("java.library.path: " + System.getProperty("java.library.path"));
 
 			System.loadLibrary("pdnative");
 			logger.info("Loaded libpdnative using loadLibrary");
 		} catch (UnsatisfiedLinkError e) {
 			logger.error("Failed to load libpdnative using loadLibrary");
-			logger.info("Attempting to load libpdnative using System.load");
-			// Fallback to hardcoded path or other strategies if necessary.
-			System.load("/Users/giuseppedesiato/Documents/tuning-systems/libs/libpdnative.dylib");
-			logger.info("Loaded libpdnative using System.load");
 		}
 	}
 

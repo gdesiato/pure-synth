@@ -13,7 +13,9 @@ public class PureSynthApplication {
 	static {
 		logger.info("Attempting to load libpdnative using loadLibrary");
 		try {
-			System.loadLibrary("libpdnative");
+			logger.info("java.library.path: " + System.getProperty("java.library.path"));
+
+			System.loadLibrary("pdnative");
 			logger.info("Loaded libpdnative using loadLibrary");
 		} catch (UnsatisfiedLinkError e) {
 			logger.error("Failed to load libpdnative using loadLibrary");
@@ -26,6 +28,9 @@ public class PureSynthApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PureSynthApplication.class, args);
+
+		System.out.println("java.library.path: " + System.getProperty("java.library.path"));
+
 
 	}
 }

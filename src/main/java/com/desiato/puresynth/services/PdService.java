@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 
 @Service
@@ -61,6 +60,9 @@ public class PdService {
                 throw new RuntimeException("Failed to load the patch from the path: " + patchPath);
             }
             logger.info("Patch loaded successfully.");
+
+            // Start the audio computation
+            startAudio();
 
         } catch (Exception e) {  // This catches all exceptions
             logger.error("Error initializing PdService", e);

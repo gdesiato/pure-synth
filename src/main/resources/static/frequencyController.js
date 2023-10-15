@@ -1,33 +1,48 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const frequencySlider = document.getElementById('frequencySlider');
-    const frequencyDisplay = document.getElementById('currentFrequency');
+const frequencySlider = document.getElementById('frequencySlider');
+const frequencyDisplay = document.getElementById('currentFrequency');
+const frequencyInput = document.getElementById('frequencyInput');
 
-    frequencySlider.addEventListener('input', function() {
-        console.log('Slider moved');
-        updateFrequencyDisplay(this.value);
-    });
-
-    function updateFrequencyDisplay(value) {
-        frequencyDisplay.textContent = `Current Frequency: ${value}Hz`;
-    }
-
-    function setFrequency() {
-        const frequency = frequencySlider.value;
-        updateFrequencyDisplay(frequency);
-
-        fetch('/audio/setFrequency', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'frequency=' + frequency
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data);
-        });
-    }
-
-    // call this once to initialize the frequency display
-    updateFrequencyDisplay(frequencySlider.value);
+// Update the display when the slider is moved
+frequencySlider.addEventListener('input', function() {
+    updateFrequencyDisplay(this.value);
 });
+
+// Function to update the frequency display
+function updateFrequencyDisplay(value) {
+    frequencyDisplay.textContent = `Current Frequency: ${value}Hz`;
+}
+
+// Function to set frequency using the slider value and send it to the server
+function setFrequency() {
+    const frequency = frequencySlider.value;
+    updateFrequencyDisplay(frequency);
+    sendFrequencyToServer(frequency);
+}
+
+// Function to set specific frequency using the input field value and send it to the server
+function setSpecificFrequency() {
+    const specificFrequency = frequencyInput.value;
+    updateFrequencyDisplay(specificFrequency);
+    sendFrequencyToServer(specificFrequency);
+}
+
+// Function to send frequency value to the server
+function sendFrequencyToServer(frequencyValue) {
+    fetch('/audio/setFrequency', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'frequency=' + frequencyValue
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error sending frequency to server:', error);
+    });
+}
+
+// Initialize the frequency display
+updateFrequencyDisplay(frequencySlider.value);

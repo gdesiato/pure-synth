@@ -4,6 +4,7 @@ const frequencyInput = document.getElementById('frequencyInput');
 
 // Update the display when the slider is moved
 frequencySlider.addEventListener('input', function() {
+    console.log("Slider moved. Current value:", this.value); // log the current value of the slider when it's moved
     updateFrequencyDisplay(this.value);
 });
 
@@ -24,6 +25,13 @@ function setSpecificFrequency() {
     const specificFrequency = frequencyInput.value;
     updateFrequencyDisplay(specificFrequency);
     sendFrequencyToServer(specificFrequency);
+}
+
+// Function to set the frequency using the current value of the slider
+function setSliderFrequency() {
+    const sliderFrequency = frequencySlider.value;
+    updateFrequencyDisplay(sliderFrequency);
+    sendFrequencyToServer(sliderFrequency);
 }
 
 // Function to send frequency value to the server

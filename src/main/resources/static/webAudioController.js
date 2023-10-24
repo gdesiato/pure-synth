@@ -1,9 +1,15 @@
 let context;
 let oscillator;
 let currentWaveform = 'sine'; // default waveform
+let currentFrequency = 440; // default frequency
 
 document.getElementById('playTone').addEventListener('click', function() {
     playTone(440, currentWaveform);
+});
+
+document.getElementById('frequency').addEventListener('input', function() {
+    setFrequency(this.value);
+    document.getElementById('frequencyValue').textContent = this.value;
 });
 
 document.getElementById('stopTone').addEventListener('click', stopTone);
@@ -51,6 +57,13 @@ function setWaveformType(waveformType) {
     if (oscillator) {
         stopTone(); // Stop the current oscillator
         playTone(440, waveformType); // Start a new oscillator with the new waveform type
+    }
+}
+
+function setFrequency(frequency) {
+    currentFrequency = frequency;
+    if (oscillator) {
+        oscillator.frequency.setValueAtTime(frequency, context.currentTime);
     }
 }
 

@@ -22,7 +22,6 @@ waveformButtons.forEach(button => {
 });
 
 function initAudioContext() {
-    // Initialize Audio Context
     context = new (window.AudioContext || window.webkitAudioContext)();
 }
 

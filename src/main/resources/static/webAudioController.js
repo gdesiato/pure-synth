@@ -31,7 +31,8 @@ function initAudioContext() {
     context = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = context.createGain();
     gainNode.connect(context.destination);
-    setVolume(0.3); // Set the initial volume to 0.3
+    setVolume(0.1); // Set the initial volume to 0.1
+
 }
 
 function playTone(frequency, waveformType) {

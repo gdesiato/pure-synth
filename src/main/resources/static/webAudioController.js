@@ -86,6 +86,8 @@ function setVolume(volume) {
     if (gainNode) {
         gainNode.gain.setValueAtTime(volume, context.currentTime);
     }
+    document.getElementById('volume').value = volume; // Update the slider's value
+    document.getElementById('volumeValue').textContent = volume; // Update the displayed volume value
 }
 
 

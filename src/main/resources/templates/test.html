@@ -6,19 +6,24 @@
     <title>Web Audio API Test</title>
 </head>
 <body>
-<h2>Play Tone</h2>
-<button id="playTone">Play</button>
-<button id="stopTone">Stop</button>
-<br>
-<button class="waveformButton" data-waveform="sine">Sine</button>
-<button class="waveformButton" data-waveform="square">Square</button>
-<button class="waveformButton" data-waveform="sawtooth">Sawtooth</button>
-<button class="waveformButton" data-waveform="triangle">Triangle</button>
-<br>
-<label for="frequency">Frequency: </label>
-<input type="range" id="frequency" name="frequency" min="20" max="6000" value="440">
-<span id="frequencyValue">440</span> Hz
-<script src="/webAudioController.js"></script>
+    <h2>Play Tone</h2>
+    <button id="playTone">Play</button>
+    <button id="stopTone">Stop</button>
+    <br>
+    <button class="waveformButton" data-waveform="sine">Sine</button>
+    <button class="waveformButton" data-waveform="square">Square</button>
+    <button class="waveformButton" data-waveform="sawtooth">Sawtooth</button>
+    <button class="waveformButton" data-waveform="triangle">Triangle</button>
+    <br>
+    <label for="frequency">Frequency: </label>
+    <input type="range" id="frequency" name="frequency" min="20" max="6000" value="440">
+    <span id="frequencyValue">440</span> Hz
+    <br>
+    <label for="volume">Volume:</label>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+    <span id="volumeValue">1</span>
+
+    <script src="/webAudioController.js"></script>
 
 </body>
 </html>

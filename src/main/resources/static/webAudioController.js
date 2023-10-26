@@ -2,6 +2,7 @@ let context;
 let oscillator;
 let currentWaveform = 'sine'; // default waveform
 let currentFrequency = 440; // default frequency
+let gainNode; // volume
 
 document.getElementById('playTone').addEventListener('click', function() {
     playTone(440, currentWaveform);
@@ -14,6 +15,11 @@ document.getElementById('frequency').addEventListener('input', function() {
 
 document.getElementById('stopTone').addEventListener('click', stopTone);
 
+document.getElementById('volume').addEventListener('input', function() {
+    setVolume(this.value);
+    document.getElementById('volumeValue').textContent = this.value;
+});
+
 const waveformButtons = document.querySelectorAll('.waveformButton');
 waveformButtons.forEach(button => {
     button.addEventListener('click', function() {
@@ -23,6 +29,9 @@ waveformButtons.forEach(button => {
 
 function initAudioContext() {
     context = new (window.AudioContext || window.webkitAudioContext)();
+    gainNode = context.createGain();
+    gainNode.connect(context.destination);
+    setVolume(0.3); // Set the initial volume to 0.3
 }
 
 function playTone(frequency, waveformType) {
@@ -39,7 +48,8 @@ function playTone(frequency, waveformType) {
     oscillator.type = waveformType;
     console.log('Oscillator type set to:', oscillator.type);
     oscillator.frequency.setValueAtTime(frequency, context.currentTime);
-    oscillator.connect(context.destination);
+    oscillator.connect(gainNode); // Connect the oscillator to the gainNode
+    gainNode.connect(context.destination); // Connect the gainNode to the destination
     oscillator.start();
 }
 
@@ -54,15 +64,27 @@ function setWaveformType(waveformType) {
     console.log('Setting waveform to:', waveformType);
     currentWaveform = waveformType;
     if (oscillator) {
-        stopTone(); // Stop the current oscillator
-        playTone(440, waveformType); // Start a new oscillator with the new waveform type
+        oscillator.type = waveformType;
     }
+    waveformButtons.forEach(button => {
+        if (button.dataset.waveform === waveformType) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    });
 }
 
 function setFrequency(frequency) {
     currentFrequency = frequency;
     if (oscillator) {
         oscillator.frequency.setValueAtTime(frequency, context.currentTime);
+    }
+}
+
+function setVolume(volume) {
+    if (gainNode) {
+        gainNode.gain.setValueAtTime(volume, context.currentTime);
     }
 }
 

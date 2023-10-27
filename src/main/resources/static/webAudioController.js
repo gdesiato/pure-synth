@@ -3,6 +3,7 @@ let oscillator;
 let currentWaveform = 'sine'; // default waveform
 let currentFrequency = 440; // default frequency
 let gainNode; // volume
+let panner;
 
 document.getElementById('playTone').addEventListener('click', function() {
     playTone(440, currentWaveform);
@@ -27,12 +28,24 @@ waveformButtons.forEach(button => {
     });
 });
 
+document.getElementById('pan').addEventListener('input', function() {
+    setPan(this.value);
+});
+
+document.getElementById('resetPan').addEventListener('click', function() {
+    setPan(null, true);
+});
+
+
+
 function initAudioContext() {
     context = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = context.createGain();
-    gainNode.connect(context.destination);
-    setVolume(0.1); // Set the initial volume to 0.1
+    panner = context.createStereoPanner();
 
+    gainNode.connect(panner);
+    panner.connect(context.destination);
+    setVolume(0.1); // Set the initial volume to 0.1
 }
 
 function playTone(frequency, waveformType) {
@@ -90,5 +103,18 @@ function setVolume(volume) {
     document.getElementById('volume').value = volume; // Update the slider's value
     document.getElementById('volumeValue').textContent = volume; // Update the displayed volume value
 }
+
+function setPan(value, reset = false) {
+    if (reset) {
+        value = 0;
+        document.getElementById('pan').value = 0;
+        document.getElementById('panValue').textContent = 0;
+    } else {
+        document.getElementById('panValue').textContent = value;
+    }
+
+    panner.pan.setValueAtTime(value, context.currentTime);
+}
+
 
 

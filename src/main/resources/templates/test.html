@@ -15,13 +15,23 @@
     <button class="waveformButton" data-waveform="sawtooth">Sawtooth</button>
     <button class="waveformButton" data-waveform="triangle">Triangle</button>
     <br>
+
+<!--    frequency-->
     <label for="frequency">Frequency: </label>
     <input type="range" id="frequency" name="frequency" min="20" max="6000" value="440">
     <span id="frequencyValue">440</span> Hz
     <br>
+
+<!--    volume-->
     <label for="volume">Volume:</label>
     <input type="range" id="volume" min="0" max="1" step="0.01" value="0.1">
     <span id="volumeValue">0.1</span>
+
+<!--    panning-->
+    <label for="pan">Pan: </label>
+    <input type="range" id="pan" min="-1" max="1" step="0.01" value="0">
+    <span id="panValue">0</span>
+    <button id="resetPan">Reset Pan</button>
 
     <script src="/webAudioController.js"></script>
 

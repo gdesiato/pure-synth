@@ -55,12 +55,12 @@ function initAudioContext() {
     context = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = context.createGain();
     panner = context.createStereoPanner();
+    analyser = context.createAnalyser();
 
     gainNode.connect(panner);
     panner.connect(context.destination);
     setVolume(0.1); // Set the initial volume to 0.1
 
-    analyser = context.createAnalyser();
     analyser.fftSize = 2048; // You can adjust this value as needed
     bufferLength = analyser.frequencyBinCount;
     dataArray = new Uint8Array(bufferLength);

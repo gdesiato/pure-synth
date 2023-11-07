@@ -50,23 +50,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-
 function initAudioContext() {
     context = new (window.AudioContext || window.webkitAudioContext)();
     gainNode = context.createGain();
     panner = context.createStereoPanner();
     analyser = context.createAnalyser();
 
+    // Connect gainNode to panner, then panner to analyser, then analyser to destination
     gainNode.connect(panner);
-    panner.connect(context.destination);
+    panner.connect(analyser);
+    analyser.connect(context.destination);
+
     setVolume(0.1); // Set the initial volume to 0.1
 
-    analyser.fftSize = 2048; // You can adjust this value as needed
+    analyser.fftSize = 2048;
     bufferLength = analyser.frequencyBinCount;
     dataArray = new Uint8Array(bufferLength);
-
-    gainNode.connect(analyser);
-    analyser.connect(context.destination);
 
     // Initialize the canvas
     canvas = document.getElementById('visualizer');

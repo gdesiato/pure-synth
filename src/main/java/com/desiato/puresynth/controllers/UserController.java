@@ -40,7 +40,6 @@ public class UserController {
         return Optional.ofNullable(userService.findByUsername(principal.getName())).map(user -> {
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
-            // ... (update other properties)
             User updatedUser = userService.saveUser(user);
             return ResponseEntity.ok(updatedUser);
         }).orElse(ResponseEntity.notFound().build());

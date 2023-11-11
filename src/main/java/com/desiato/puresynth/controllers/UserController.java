@@ -1,8 +1,10 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.exceptions.InvalidInputException;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,19 +20,19 @@ public class UserController {
 
     // Register a new user
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User newUser) {
+    public ResponseEntity<Object> registerUser(@RequestBody User newUser) {
         if (userService.findByUsername(newUser.getUsername()) != null) {
-            return ResponseEntity.badRequest().body(null); // Username already exists
+            throw new InvalidInputException("Username already exists");
         }
         User registeredUser = userService.saveUser(newUser);
-        return ResponseEntity.ok(registeredUser);
+        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
     }
 
     // Fetch the logged-in user's profile
     @GetMapping("/me")
     public ResponseEntity<User> getMyProfile(Principal principal) {
         return Optional.ofNullable(userService.findByUsername(principal.getName()))
-                .map(user -> ResponseEntity.ok(user))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 

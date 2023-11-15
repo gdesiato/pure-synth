@@ -15,12 +15,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/", true);
+        http
+                .csrf(csrf -> csrf.disable()) // Disabling CSRF protection
+                .authorizeRequests(authz -> authz
+                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/", true)
+                );
         return http.build();
     }
 

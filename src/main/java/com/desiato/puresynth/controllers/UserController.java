@@ -18,6 +18,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping
+    public String helloApi(){
+        return "hello api";
+    }
+
     // Register a new user
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody User newUser) {

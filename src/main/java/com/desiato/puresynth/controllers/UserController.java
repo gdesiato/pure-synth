@@ -2,6 +2,7 @@ package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -46,6 +47,19 @@ public class UserController {
         userService.saveUser(newUser);
 
         return "redirect:/login";
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@ModelAttribute User user, HttpSession session) {
+        User authenticatedUser = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
+        if (authenticatedUser != null) {
+            session.setAttribute("currentUser", authenticatedUser);
+            // Redirect to the user's specific page
+            return "redirect:/user/" + authenticatedUser.getId();
+        } else {
+            // Login failed
+            return "login";
+        }
     }
 }
 

@@ -52,7 +52,6 @@ public class CRUDController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-
     @DeleteMapping("/me")
     public ResponseEntity<?> deleteMyProfile(Principal principal) {
         return Optional.ofNullable(userService.findByUsername(principal.getName())).map(user -> {

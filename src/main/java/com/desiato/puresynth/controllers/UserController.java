@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -59,6 +60,17 @@ public class UserController {
         } else {
             // Login failed
             return "login";
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public String userPage(@PathVariable Long userId, Model model, HttpSession session) {
+        User user = (User) session.getAttribute("currentUser");
+        if (user != null && user.getId().equals(userId)) {
+            model.addAttribute("user", user);
+            return "userPage"; // the view name for the user-specific page
+        } else {
+            return "redirect:/login"; // redirect to login if the user is not in session or IDs do not match
         }
     }
 }

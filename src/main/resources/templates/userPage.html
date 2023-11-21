@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>User Profile</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>User Profile</title>
 
-</head>
-<body>
+    </head>
 
-<header>
-    <h1>Welcome to Your Dashboard!</h1>
-</header>
+    <body>
 
-<section>
-    <h2>User Information</h2>
-    <table>
-        <tr>
-            <th>ID:</th>
-            <td th:text="${user.id}"></td>
-        </tr>
-        <tr>
-            <th>Username:</th>
-            <td th:text="${user.username}"></td>
-        </tr>
-        <tr>
-            <th>Email:</th>
-            <td th:text="${user.email}"></td>
-        </tr>
+    <header>
+        <h1>Welcome to Your Dashboard!</h1>
+    </header>
 
-    </table>
-</section>
+    <section>
+        <h2>User Information</h2>
+        <table>
+            <tr>
+                <th>ID:</th>
+                <td th:text="${user.id}"></td>
+            </tr>
+            <tr>
+                <th>Username:</th>
+                <td th:text="${user.username}"></td>
+            </tr>
+            <tr>
+                <th>Email:</th>
+                <td th:text="${user.email}"></td>
+            </tr>
 
-<!--<a th:if="${user.hasAccessToSynth}" href="/synth">Go to Synth Page</a>-->
+        </table>
+    </section>
+
+    <h1>Go to Synth</h1>
+    <a href="/webaudio">Go to Synth Page</a>-->
 
 
 
-</body>
+    </body>
+
 </html>

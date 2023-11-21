@@ -8,7 +8,7 @@ public class WebAudioViewController {
 
     @GetMapping("/webaudio")
     public String serveWebAudioPage() {
-        return "test";
+        return "webaudio";
     }
 }
 

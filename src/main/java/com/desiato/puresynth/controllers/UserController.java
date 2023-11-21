@@ -68,7 +68,7 @@ public class UserController {
         User user = (User) session.getAttribute("currentUser");
         if (user != null && user.getId().equals(userId)) {
             model.addAttribute("user", user);
-            return "userPage"; // the view name for the user-specific page
+            return "userPage"; // user-specific page
         } else {
             return "redirect:/login"; // redirect to login if the user is not in session or IDs do not match
         }

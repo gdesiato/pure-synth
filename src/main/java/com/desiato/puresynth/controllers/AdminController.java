@@ -41,7 +41,6 @@ public class AdminController {
         return userService.getUserById(id).map(user -> {
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
-            // ... (update other properties)
             User updatedUser = userService.saveUser(user);
             return ResponseEntity.ok(updatedUser);
         }).orElse(ResponseEntity.notFound().build());

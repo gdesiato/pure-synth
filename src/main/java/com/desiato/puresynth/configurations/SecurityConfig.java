@@ -21,14 +21,12 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 c -> c.anyRequest().permitAll()
+
+                //c -> c.anyRequest().authenticated()
+
         );
 
         return http.build();
     }
 
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }

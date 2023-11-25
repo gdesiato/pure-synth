@@ -15,14 +15,17 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http)
             throws Exception {
 
-        http.httpBasic(Customizer.withDefaults());
+        http.formLogin(form -> form
+                .loginPage("/login") // Custom login page URL
+                .defaultSuccessUrl("/user/{id}", true)
+                .permitAll() // Allow everyone to see the login page
+        );
 
         http.authorizeHttpRequests(
-                c -> c.anyRequest().permitAll()
-//                c -> c.requestMatchers("/register").permitAll()
-//                        .requestMatchers("/login").permitAll()
-//                        .anyRequest().authenticated()
-
+                //c -> c.anyRequest().permitAll()
+                c -> c.requestMatchers("/register").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().authenticated()
         );
 
         return http.build();

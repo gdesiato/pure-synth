@@ -31,6 +31,7 @@ public class CustomUserDetailsServiceTest {
         User user = new User();
         user.setUsername("testUser");
         user.setPassword(passwordEncoder.encode("testPassword"));
+        user.setEmail("testUser@mail.com");
         userRepository.save(user);
     }
 

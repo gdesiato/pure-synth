@@ -28,11 +28,14 @@ public class CustomUserDetailsServiceTest {
     @BeforeEach
     public void setup() {
         // Create and save a test user, if not already present
-        User user = new User();
-        user.setUsername("testUser");
-        user.setPassword(passwordEncoder.encode("testPassword"));
-        user.setEmail("testUser@mail.com");
-        userRepository.save(user);
+        User user = userRepository.findByUsername("testUser");
+        if (user == null) {
+            user = new User();
+            user.setUsername("testUser");
+            user.setPassword(passwordEncoder.encode("testPassword"));
+            user.setEmail("testUser@mail.com");
+            userRepository.save(user);
+        }
     }
 
     @Test

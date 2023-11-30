@@ -18,5 +18,4 @@ public class Filter {
     private double cutoffFrequency;
     private double resonance;
 
-
 }

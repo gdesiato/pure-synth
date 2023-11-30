@@ -1,6 +1,8 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.models.Role;
 import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.services.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.Collections;
+
 @Controller
 public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -44,7 +51,9 @@ public class UserController {
         // Encrypt the password
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
-        // Save the new user
+        // Assign the Role and Save the new user
+        Role defaultRole = roleRepository.findByName("ROLE_USER");
+        newUser.setRoles(Collections.singleton(defaultRole));
         userService.saveUser(newUser);
 
         return "redirect:/login";

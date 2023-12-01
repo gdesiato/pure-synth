@@ -23,13 +23,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-//    @Column(nullable = false)
-//    private String authority;
-
     @ElementCollection
     private Set<String> userPreferences;
 
-    // This part is the relationship between User and Role
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

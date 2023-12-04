@@ -8,14 +8,14 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Oscillator {
+public class AudioRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String waveformType; // Sine, Square, Sawtooth, Triangle, etc.
+    private WaveformType waveformType;
     private double frequency;
-    private double amplitude;
+    private double duration;
 
 }

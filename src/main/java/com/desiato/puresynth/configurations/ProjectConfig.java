@@ -1,7 +1,5 @@
 package com.desiato.puresynth.configurations;
 
-import com.desiato.puresynth.services.CustomUserDetailsService;
-import com.desiato.puresynth.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

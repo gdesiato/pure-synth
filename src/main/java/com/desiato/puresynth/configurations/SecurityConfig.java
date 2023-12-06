@@ -2,7 +2,6 @@ package com.desiato.puresynth.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,11 +21,16 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(
-                // c -> c.anyRequest().permitAll()
+                 //c -> c.anyRequest().permitAll()
+
                 c -> c.requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
                         .anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-//                        .anyRequest().authenticated()
+                        //.anyRequest().authenticated()
+        );
+
+        http.csrf(
+                c -> c.disable()
         );
 
         return http.build();

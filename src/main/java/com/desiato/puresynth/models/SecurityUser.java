@@ -1,5 +1,7 @@
 package com.desiato.puresynth.models;
 
+import jakarta.persistence.Entity;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,14 @@ public class SecurityUser implements UserDetails {
         return user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
+    }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 
     @Override
@@ -52,4 +62,5 @@ public class SecurityUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

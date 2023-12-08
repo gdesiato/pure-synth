@@ -1,11 +1,16 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.models.Role;
+import com.desiato.puresynth.models.SecurityUser;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.services.UserService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +33,8 @@ public class UserController {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     // Display registration form
     @GetMapping("/register")
@@ -59,28 +66,27 @@ public class UserController {
         return "redirect:/login";
     }
 
-    @PostMapping("/login")
-    public String loginUser(@ModelAttribute User user, HttpSession session) {
-        User authenticatedUser = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-        if (authenticatedUser != null) {
-            session.setAttribute("currentUser", authenticatedUser);
-            // Redirect to the user's specific page
-            return "redirect:/user/" + authenticatedUser.getId();
-        } else {
-            // Login failed
-            return "login";
-        }
-    }
 
     @GetMapping("/user/{userId}")
-    public String userPage(@PathVariable Long userId, Model model, HttpSession session) {
-        User user = (User) session.getAttribute("currentUser");
-        if (user != null && user.getId().equals(userId)) {
-            model.addAttribute("user", user);
-            return "userPage"; // user-specific page
+    public String userPage(@PathVariable Long userId, Model model, Authentication authentication) {
+        logger.info("Accessing user page for ID: {}", userId);
+
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser securityUser) {
+            User user = securityUser.getUser();
+
+            if (user.getId().equals(userId)) {
+                model.addAttribute("user", user);
+                logger.info("User ID matches. Displaying user page for ID: {}", userId);
+                return "userPage"; // user-specific page
+            } else {
+                logger.warn("User ID does not match the authenticated user's ID.");
+            }
         } else {
-            return "redirect:/login"; // redirect to login if the user is not in session or IDs do not match
+            logger.warn("Authentication object is null or principal is not an instance of SecurityUser.");
         }
+
+        logger.info("Redirecting to login page.");
+        return "redirect:/login";
     }
 }
 

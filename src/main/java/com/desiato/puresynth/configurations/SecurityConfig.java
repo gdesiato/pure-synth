@@ -30,8 +30,6 @@ public class SecurityConfig {
         );
 
         http.authorizeHttpRequests(
-                 //c -> c.anyRequest().permitAll()
-
                 c -> c.requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
                         .anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")

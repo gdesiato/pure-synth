@@ -13,8 +13,7 @@ public class AudioService {
 
     private static final int SAMPLE_RATE = 44100;
     private static final int BITS_DEPTH = 16;
-    private static final boolean BIG_ENDIAN = false; // Little-endian for most systems. Determines how multibyte values
-                                                    // are stored and read
+    private static final boolean BIG_ENDIAN = false;
 
     @Value("${audio.files.directory}")
     private String audioFilesDir;
@@ -33,7 +32,7 @@ public class AudioService {
         return audioFile;
     }
 
-    // Method that creates a digital representation of a SINE WAVE
+
     private byte[] generateSineWaveBuffer(double frequency, double durationInSeconds) {
 
         int bufferLength = (int) (durationInSeconds * SAMPLE_RATE);

@@ -1,4 +1,4 @@
-package com.desiato.puresynth.controllers;
+package com.desiato.puresynth.restControllers;
 
 import com.desiato.puresynth.exceptions.InvalidInputException;
 import com.desiato.puresynth.models.User;
@@ -6,6 +6,8 @@ import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -21,6 +23,15 @@ public class UserCRUDController {
     @GetMapping
     public String helloApi(){
         return "hello api";
+    }
+
+    @GetMapping("/info")
+    public String userInfo() {
+        // Fetching the current authenticated user's details
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName(); // Gets the username of the authenticated user
+
+        return "Access granted for user: " + username;
     }
 
     // Register a new user

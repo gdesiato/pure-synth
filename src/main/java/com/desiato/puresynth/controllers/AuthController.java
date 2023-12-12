@@ -21,19 +21,6 @@ public class AuthController {
         return "login";
     }
 
-//    @PostMapping("/login")
-//    public String loginUser(@ModelAttribute User user, HttpSession session) {
-//        User authenticatedUser = userService.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-//        if (authenticatedUser != null) {
-//            session.setAttribute("currentUser", authenticatedUser);
-//            // Redirect to the user's specific page
-//            return "redirect:/user/" + authenticatedUser.getId();
-//        } else {
-//            // Login failed
-//            return "login";
-//        }
-//    }
-
     @GetMapping("/login-error")
     public String loginError(Model model) {
         model.addAttribute("loginError", true);

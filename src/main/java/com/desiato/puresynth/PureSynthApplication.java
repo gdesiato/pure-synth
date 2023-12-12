@@ -56,6 +56,31 @@ public class PureSynthApplication implements CommandLineRunner {
 			// Save the user
 			userRepository.save(defaultUser);
 		}
+
+		// Check if the admin user already exists
+		if (userRepository.findByUsername("adminUser") == null) {
+			// Create the admin user
+			User adminUser = new User();
+			adminUser.setUsername("adminUser");
+			adminUser.setPassword(passwordEncoder.encode("adminPassword"));
+			adminUser.setEmail("adminUser@mail.com");
+
+			// Fetch or create the admin role
+			Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+			if (adminRole == null) {
+				adminRole = new Role();
+				adminRole.setName("ROLE_ADMIN");
+				roleRepository.save(adminRole);
+			}
+
+			// Assign the role to the user
+			Set<Role> roles = new HashSet<>();
+			roles.add(adminRole);
+			adminUser.setRoles(roles);
+
+			// Save the user
+			userRepository.save(adminUser);
+		}
 	}
 }
 

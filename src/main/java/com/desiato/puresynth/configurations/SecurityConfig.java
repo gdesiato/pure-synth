@@ -21,6 +21,7 @@ public class SecurityConfig {
 
         http.formLogin(form -> form
                 .loginPage("/login")
+                .failureUrl("/login?error")
                 .successHandler((request, response, authentication) -> {
                     SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
                     logger.info("Login successful for user: {}, with ID: {}", userDetails.getUsername(), userDetails.getId());

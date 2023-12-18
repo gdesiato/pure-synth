@@ -12,6 +12,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -19,9 +20,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-
-
+//@ExtendWith(SpringExtension.class)
+//@WebMvcTest(AdminCRUDController.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AdminCRUDControllerTest {
@@ -37,7 +37,7 @@ public class AdminCRUDControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testGetAllUsers() throws Exception {
 
-        // Create mock User objects
+        // Create mock User
         User mockUser1 = new User();
         mockUser1.setUsername("user1");
         mockUser1.setEmail("user1@example.com");
@@ -58,4 +58,34 @@ public class AdminCRUDControllerTest {
                 .andExpect(jsonPath("$[1].username", is("user2")))
                 .andExpect(jsonPath("$[1].email", is("user2@example.com")));
     }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testGetUserById_UserExists() throws Exception {
+
+        User mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setUsername("user1");
+        mockUser.setEmail("user1@example.com");
+
+        when(userService.getUserById(1L)).thenReturn(Optional.of(mockUser));
+
+        mockMvc.perform(get("/api/admin/users/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(1)))
+                .andExpect(jsonPath("$.username", is("user1")))
+                .andExpect(jsonPath("$.email", is("user1@example.com")));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testGetUserById_UserDoesNotExist() throws Exception {
+        // Mock the behavior of userService for non-existing user
+        when(userService.getUserById(2L)).thenReturn(Optional.empty());
+
+        // for non-existing user
+        mockMvc.perform(get("/api/admin/users/{id}", 2L))
+                .andExpect(status().isNotFound());
+    }
+
 }

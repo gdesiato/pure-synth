@@ -22,9 +22,11 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -124,13 +126,17 @@ public class AdminCRUDControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String newUserJson = objectMapper.writeValueAsString(newUser);
 
-        // Perform the POST request and assert the response
+        // Perform the POST request, and assert the response
         mockMvc.perform(post("/api/admin/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.username", is("newUser")))
                 .andExpect(jsonPath("$.email", is("newUser@example.com")));
+
+        // Verify that userService.saveUser was called with any User object
+        verify(userService).saveUser(any(User.class));
     }
 }

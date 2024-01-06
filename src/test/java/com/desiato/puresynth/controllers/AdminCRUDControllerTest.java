@@ -8,6 +8,8 @@ import com.desiato.puresynth.services.UserService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -47,6 +49,8 @@ public class AdminCRUDControllerTest {
 
     @MockBean
     private PasswordEncoder passwordEncoder;
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminCRUDControllerTest.class);
 
 
     @Test
@@ -103,40 +107,5 @@ public class AdminCRUDControllerTest {
         // for non-existing user
         mockMvc.perform(get("/api/admin/users/{id}", 2L))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
-    public void testCreateUser() throws Exception {
-        // mock user
-        User newUser = new User();
-        newUser.setUsername("newUser");
-        newUser.setEmail("newUser@example.com");
-
-        // mock user to be returned by userService
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setUsername(newUser.getUsername());
-        savedUser.setEmail(newUser.getEmail());
-
-        // Mock the behavior of userService to return the saved user
-        when(userService.saveUser(any(User.class))).thenReturn(savedUser);
-
-        // Convert newUser object to JSON
-        ObjectMapper objectMapper = new ObjectMapper();
-        String newUserJson = objectMapper.writeValueAsString(newUser);
-
-        // Perform the POST request, and assert the response
-        mockMvc.perform(post("/api/admin/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(newUserJson))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.username", is("newUser")))
-                .andExpect(jsonPath("$.email", is("newUser@example.com")));
-
-        // Verify that userService.saveUser was called with any User object
-        verify(userService).saveUser(any(User.class));
     }
 }

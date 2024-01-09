@@ -7,6 +7,8 @@ import com.desiato.puresynth.restControllers.UserCRUDController;
 import com.desiato.puresynth.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -16,9 +18,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.is;
 
@@ -42,6 +46,9 @@ public class UserCRUDControllerTest {
     @MockBean
     private PasswordEncoder passwordEncoder;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserCRUDControllerTest.class);
+
+
 
     @Test
     public void testHelloApi() throws Exception {
@@ -60,24 +67,39 @@ public class UserCRUDControllerTest {
 
     @Test
     public void testRegisterUser() throws Exception {
+        logger.info("Starting testRegisterUser");
+
         User newUser = new User();
         newUser.setUsername("newUser");
         newUser.setEmail("newUser@test.com");
+        logger.info("Created newUser for testing");
 
         User savedUser = new User();
         savedUser.setId(1L);
         savedUser.setUsername("newUser");
         savedUser.setEmail("newUser@test.com");
+        logger.info("Created savedUser for testing");
 
         when(userService.findByUsername("newUser")).thenReturn(null);
         when(userService.saveUser(any(User.class))).thenReturn(savedUser);
+        logger.info("Mocked userService methods");
 
+        ObjectMapper objectMapper = new ObjectMapper();
+        String newUserJson = objectMapper.writeValueAsString(newUser);
+
+        logger.info("Performing POST request to register a new user");
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(newUser)))
+                        .content(newUserJson))
+                .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.username", is("newUser")))
                 .andExpect(jsonPath("$.email", is("newUser@test.com")));
+        logger.info("POST request performed");
+
+        logger.info("Verifying userService.saveUser was called");
+        verify(userService).saveUser(any(User.class));
+        logger.info("testRegisterUser completed");
     }
 }

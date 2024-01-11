@@ -51,6 +51,7 @@ public class UserCRUDControllerTest {
 
 
     @Test
+    @WithMockUser(username = "testuser")
     public void testHelloApi() throws Exception {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
@@ -66,6 +67,7 @@ public class UserCRUDControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser")
     public void testRegisterUser() throws Exception {
         logger.info("Starting testRegisterUser");
 

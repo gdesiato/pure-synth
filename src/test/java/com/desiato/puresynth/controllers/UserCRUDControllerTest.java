@@ -105,7 +105,7 @@ public class UserCRUDControllerTest {
 //    }
 
     @Test
-    //@WithMockUser(username = "testUser")
+    @WithMockUser(username = "testUser")
     public void testRegisterUser_Basic() throws Exception {
         logger.info("Starting simplified testRegisterUser");
 
@@ -123,8 +123,11 @@ public class UserCRUDControllerTest {
         mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
-                .andDo(print())
-                .andExpect(status().isCreated()); // Only checking for the status code
+                .andExpect(status().isCreated());
+
+        logger.info("Verifying that userService methods are called as expected");
+        verify(userService).findByUsername("newUser");
+        verify(userService).saveUser(any(User.class));
 
         logger.info("Simplified testRegisterUser completed");
     }

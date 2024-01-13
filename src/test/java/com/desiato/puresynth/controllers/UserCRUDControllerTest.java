@@ -112,6 +112,7 @@ public class UserCRUDControllerTest {
         User newUser = new User();
         newUser.setUsername("newUser");
         newUser.setEmail("newUser@test.com");
+        newUser.setPassword("newPassword");
 
         when(userService.findByUsername("newUser")).thenReturn(null);
         when(userService.saveUser(any(User.class))).thenReturn(new User()); // Returning a basic user object

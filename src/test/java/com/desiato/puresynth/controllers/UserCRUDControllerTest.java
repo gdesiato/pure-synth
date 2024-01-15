@@ -16,7 +16,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -82,10 +84,20 @@ public class UserCRUDControllerTest {
         String newUserJson = objectMapper.writeValueAsString(newUser);
 
         logger.info("Performing POST request to register a new user with basic assertions");
-        mockMvc.perform(post("/api/users/register")
+        // Performing the request
+        MvcResult result = mockMvc.perform(post("/api/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
-                .andExpect(status().isCreated());
+                .andReturn();
+
+        // Logging the response details
+        int status = result.getResponse().getStatus();
+        String content = result.getResponse().getContentAsString();
+        logger.info("Response status: " + status);
+        logger.info("Response body: " + content);
+
+        // Asserting the response status
+        assertEquals(201, status, "Expected 201 Created but got " + status);
 
         logger.info("Verifying that userService methods are called as expected");
         verify(userService).findByUsername("newUser");

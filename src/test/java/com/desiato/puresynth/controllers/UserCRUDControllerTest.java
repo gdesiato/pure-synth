@@ -1,5 +1,6 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.models.Role;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.repositories.UserRepository;
@@ -17,6 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -77,11 +82,16 @@ public class UserCRUDControllerTest {
         newUser.setEmail("newUser@test.com");
         newUser.setPassword("newPassword");
 
+        Role userRole = new Role();
+        userRole.setName("USER");
+        newUser.setRoles(Collections.singleton(userRole));
+
         when(userService.findByUsername("newUser")).thenReturn(null);
         when(userService.saveUser(any(User.class))).thenReturn(new User()); // Returning a basic user object
 
         ObjectMapper objectMapper = new ObjectMapper();
         String newUserJson = objectMapper.writeValueAsString(newUser);
+        String expectedUserJson = objectMapper.writeValueAsString(newUser);
 
         logger.info("Performing POST request to register a new user with basic assertions");
         // Performing the request
@@ -92,12 +102,14 @@ public class UserCRUDControllerTest {
 
         // Logging the response details
         int status = result.getResponse().getStatus();
-        String content = result.getResponse().getContentAsString();
+        String actualResponseContent = result.getResponse().getContentAsString();
         logger.info("Response status: " + status);
-        logger.info("Response body: " + content);
+        logger.info("Response body: " + actualResponseContent);
 
-        // Asserting the response status
+        // Asserting the response status and content
         assertEquals(201, status, "Expected 201 Created but got " + status);
+        assertEquals(expectedUserJson, actualResponseContent, "The response content does not match the expected user details.");
+
 
         logger.info("Verifying that userService methods are called as expected");
         verify(userService).findByUsername("newUser");

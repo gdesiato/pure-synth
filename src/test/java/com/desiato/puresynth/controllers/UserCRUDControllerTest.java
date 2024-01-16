@@ -1,5 +1,6 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.models.Role;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -20,21 +22,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-
 @WebMvcTest(UserCRUDController.class)
+@Import(SecurityConfig.class)
 public class UserCRUDControllerTest {
 
     @Autowired
@@ -73,7 +72,6 @@ public class UserCRUDControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser")
     public void testRegisterUser_Basic() throws Exception {
         logger.info("Starting simplified testRegisterUser");
 
@@ -86,8 +84,9 @@ public class UserCRUDControllerTest {
         userRole.setName("USER");
         newUser.setRoles(Collections.singleton(userRole));
 
+        // Mocking userService behavior
         when(userService.findByUsername("newUser")).thenReturn(null);
-        when(userService.saveUser(any(User.class))).thenReturn(new User()); // Returning a basic user object
+        when(userService.saveUser(any(User.class))).thenReturn(newUser); // Corrected line
 
         ObjectMapper objectMapper = new ObjectMapper();
         String newUserJson = objectMapper.writeValueAsString(newUser);

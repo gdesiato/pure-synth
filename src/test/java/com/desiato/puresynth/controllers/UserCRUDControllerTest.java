@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -73,7 +74,7 @@ public class UserCRUDControllerTest {
 
     @Test
     public void testRegisterUser_Basic() throws Exception {
-        logger.info("Starting simplified testRegisterUser");
+        logger.info("Starting testRegisterUser");
 
         User newUser = new User();
         newUser.setUsername("newUser");
@@ -86,7 +87,7 @@ public class UserCRUDControllerTest {
 
         // Mocking userService behavior
         when(userService.findByUsername("newUser")).thenReturn(null);
-        when(userService.saveUser(any(User.class))).thenReturn(newUser); // Corrected line
+        when(userService.saveUser(any(User.class))).thenReturn(newUser);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String newUserJson = objectMapper.writeValueAsString(newUser);

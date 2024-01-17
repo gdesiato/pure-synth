@@ -1,17 +1,21 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import com.desiato.puresynth.restControllers.AdminCRUDController;
 import com.desiato.puresynth.services.UserService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,12 +25,15 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(AdminCRUDController.class)
+@Import(SecurityConfig.class)
 public class AdminCRUDControllerTest {
 
     @Autowired
@@ -101,6 +108,32 @@ public class AdminCRUDControllerTest {
         // for non-existing user
         mockMvc.perform(get("/api/admin/users/{id}", 2L))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testCreateUser() throws Exception {
+        User newUser = new User();
+        newUser.setUsername("newUser");
+        newUser.setEmail("newUser@example.com");
+
+        // Simulate that the user does not exist already
+        when(userService.findByUsername("newUser")).thenReturn(null);
+
+        // Mock the behavior of userService to return newUser when saving
+        when(userService.saveUser(any(User.class))).thenReturn(newUser);
+
+        // Create a JSON string of the newUser object
+        ObjectMapper objectMapper = new ObjectMapper();
+        String newUserJson = objectMapper.writeValueAsString(newUser);
+
+        // Perform the POST request and assert the response
+        mockMvc.perform(post("/api/admin/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newUserJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(newUser.getUsername())))
+                .andExpect(jsonPath("$.email", is(newUser.getEmail())));
     }
 
 }

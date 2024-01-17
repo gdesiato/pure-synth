@@ -3,6 +3,7 @@ package com.desiato.puresynth.restControllers;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,8 +32,15 @@ public class AdminCRUDController {
 
     // Create a new user (from the admin side)
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    public ResponseEntity<Object> createUser(@RequestBody User newUser) {
+        if (userService.findByUsername(newUser.getUsername()) != null) {
+            // Username already exists, return a conflict response
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Username already exists");
+        }
+        User createdUser = userService.saveUser(newUser);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     // Update any user's details

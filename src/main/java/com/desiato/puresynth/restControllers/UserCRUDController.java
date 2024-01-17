@@ -34,7 +34,7 @@ public class UserCRUDController {
         return "Access granted for user: " + username;
     }
 
-    // Register a new user
+    // Create a new user (open endpoint) - register yourself
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody User newUser) {
         if (userService.findByUsername(newUser.getUsername()) != null) {

@@ -1,6 +1,5 @@
 package com.desiato.puresynth.restControllers;
 
-import com.desiato.puresynth.exceptions.InvalidInputException;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,9 @@ public class UserCRUDController {
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody User newUser) {
         if (userService.findByUsername(newUser.getUsername()) != null) {
-            throw new InvalidInputException("Username already exists");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Username already exists");
         }
         User registeredUser = userService.saveUser(newUser);
         return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);

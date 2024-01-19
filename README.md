@@ -1,6 +1,6 @@
 # pure synth
 
-## Online Synthesizer with Java Sound API & Spring Framework
+## Web API for Audio Synthesis
 
 ### Overview
 Online synthesizer, harnessing the power of Java Sound API for audio synthesis, tightly integrated with the Spring Framework for a seamless backend experience.

@@ -131,7 +131,7 @@ public class AdminCRUDControllerTest {
         mockMvc.perform(post("/api/admin/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username", is(newUser.getUsername())))
                 .andExpect(jsonPath("$.email", is(newUser.getEmail())));
     }

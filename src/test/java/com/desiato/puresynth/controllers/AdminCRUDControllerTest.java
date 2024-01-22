@@ -26,9 +26,9 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -134,6 +134,45 @@ public class AdminCRUDControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username", is(newUser.getUsername())))
                 .andExpect(jsonPath("$.email", is(newUser.getEmail())));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testUpdateUser_UserExists() throws Exception {
+        Long userId = 1L;
+
+        // Existing user
+        User existingUser = new User();
+        existingUser.setId(userId);
+        existingUser.setUsername("existingUser");
+        existingUser.setEmail("existing@example.com");
+
+        // User details for update
+        User updatedUserDetails = new User();
+        updatedUserDetails.setUsername("updatedUser");
+        updatedUserDetails.setEmail("updated@example.com");
+
+        // Mock getUserById to return the existing user
+        when(userService.getUserById(userId)).thenReturn(Optional.of(existingUser));
+
+        // Mock saveUser to return updated user details
+        when(userService.saveUser(any(User.class))).thenReturn(updatedUserDetails);
+
+        // Convert updatedUserDetails to JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(updatedUserDetails);
+
+        // Perform PUT request and assert the response
+        mockMvc.perform(put("/api/admin/users/{id}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username", is(updatedUserDetails.getUsername())))
+                .andExpect(jsonPath("$.email", is(updatedUserDetails.getEmail())));
+
+        // Verify interactions with userService
+        verify(userService).getUserById(userId);
+        verify(userService).saveUser(any(User.class));
     }
 
 }

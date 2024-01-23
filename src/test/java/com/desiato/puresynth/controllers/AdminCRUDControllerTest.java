@@ -26,8 +26,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -162,7 +161,7 @@ public class AdminCRUDControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-        // Perform PUT request and assert the response
+        // PUT request
         mockMvc.perform(put("/api/admin/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
@@ -173,6 +172,35 @@ public class AdminCRUDControllerTest {
         // Verify interactions with userService
         verify(userService).getUserById(userId);
         verify(userService).saveUser(any(User.class));
+    }
+
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testUpdateUser_UserDoesNotExist() throws Exception {
+        Long userId = 2L;
+
+        // User details for update
+        User updatedUserDetails = new User();
+        updatedUserDetails.setUsername("updatedUser");
+        updatedUserDetails.setEmail("updated@example.com");
+
+        // Mock getUserById to return empty (user does not exist)
+        when(userService.getUserById(userId)).thenReturn(Optional.empty());
+
+        // Convert updatedUserDetails to JSON
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(updatedUserDetails);
+
+        // Perform PUT request and assert the response
+        mockMvc.perform(put("/api/admin/users/{id}", userId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userJson))
+                .andExpect(status().isNotFound());
+
+        // Verify interactions with userService
+        verify(userService).getUserById(userId);
+        verify(userService, never()).saveUser(any(User.class)); // Ensure saveUser is not called
     }
 
 }

@@ -28,8 +28,7 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -116,5 +115,37 @@ public class UserCRUDControllerTest {
         verify(userService).saveUser(any(User.class));
 
         logger.info("Simplified testRegisterUser completed");
+    }
+
+    @Test
+    @WithMockUser(username = "testuser")
+    public void testUpdateMyProfile() throws Exception {
+
+        User existingUser = new User();
+        existingUser.setUsername("existingUser");
+        existingUser.setEmail("existingUser@test.com");
+
+        User updatedUserDetails = new User();
+        updatedUserDetails.setUsername("updatedUser");
+        updatedUserDetails.setEmail("updatedUser@test.com");
+
+        when(userService.findByUsername("testuser")).thenReturn(existingUser);
+        when(userService.saveUser(any(User.class))).thenReturn(updatedUserDetails);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
+
+        logger.info("before performing put");
+        mockMvc.perform(put("/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.username").value("updatedUser"))
+                .andExpect(jsonPath("$.email").value("updatedUser@test.com"));
+
+        logger.info("after performing put");
+
+        verify(userService).findByUsername("testuser");
+        verify(userService).saveUser(any(User.class));
     }
 }

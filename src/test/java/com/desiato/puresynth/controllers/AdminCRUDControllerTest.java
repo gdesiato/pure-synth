@@ -192,7 +192,7 @@ public class AdminCRUDControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String userJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-        // Perform PUT request and assert the response
+        // PUT request
         mockMvc.perform(put("/api/admin/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
@@ -201,6 +201,36 @@ public class AdminCRUDControllerTest {
         // Verify interactions with userService
         verify(userService).getUserById(userId);
         verify(userService, never()).saveUser(any(User.class)); // Ensure saveUser is not called
+    }
+
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testDeleteUser_UserExists() throws Exception {
+        Long userId = 1L;
+
+        when(userService.getUserById(userId)).thenReturn(Optional.of(new User()));
+
+        mockMvc.perform(delete("/api/admin/users/{id}", userId))
+                .andExpect(status().isOk());
+
+        // Verify interactions with userService
+        verify(userService).getUserById(userId);
+        verify(userService).deleteUser(userId);
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    public void testDeleteUser_UserDoesNotExist() throws Exception {
+        Long userId = 2L;
+
+        when(userService.getUserById(userId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(delete("/api/admin/users/{id}", userId))
+                .andExpect(status().isNotFound());
+
+        verify(userService).getUserById(userId);
+        verify(userService, never()).deleteUser(userId);
     }
 
 }

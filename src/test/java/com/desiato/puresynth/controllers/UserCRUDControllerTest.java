@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -118,34 +117,35 @@ public class UserCRUDControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser")
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void testUpdateMyProfile() throws Exception {
 
         User existingUser = new User();
-        existingUser.setUsername("existingUser");
-        existingUser.setEmail("existingUser@test.com");
+        existingUser.setUsername("testUser");
+        existingUser.setEmail("testuser@test.com");
+
+        Role userRole = new Role();
+        userRole.setName("USER");
+        existingUser.setRoles(Collections.singleton(userRole));
 
         User updatedUserDetails = new User();
-        updatedUserDetails.setUsername("updatedUser");
-        updatedUserDetails.setEmail("updatedUser@test.com");
+        updatedUserDetails.setUsername("testUser");
+        updatedUserDetails.setEmail("updated@test.com");
 
-        when(userService.findByUsername("testuser")).thenReturn(existingUser);
+        when(userService.findByUsername("testUser")).thenReturn(existingUser);
         when(userService.saveUser(any(User.class))).thenReturn(updatedUserDetails);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-        logger.info("before performing put");
         mockMvc.perform(put("/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("updatedUser"))
-                .andExpect(jsonPath("$.email").value("updatedUser@test.com"));
+                .andExpect(jsonPath("$.username").value("testUser"))
+                .andExpect(jsonPath("$.email").value("updated@test.com"));
 
-        logger.info("after performing put");
-
-        verify(userService).findByUsername("testuser");
+        verify(userService).findByUsername("testUser");
         verify(userService).saveUser(any(User.class));
     }
 }

@@ -34,6 +34,12 @@ public class SecurityConfig {
                 c -> c.requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "swagger-resources",
+                                "swagger-resources/**",
+                                "swagger-ui/**",
+                                "swagger-ui.html").permitAll()
                         .anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
         );
 

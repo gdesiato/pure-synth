@@ -22,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Collections;
-import java.util.Optional;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -118,38 +117,57 @@ public class UserCRUDControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testUser", roles = {"USER"})
-    public void testUpdateMyProfile() throws Exception {
-
+    //@WithMockUser(username = "testUser", roles = {"USER"})
+    public void testUpdateMyProfile_UserExists() throws Exception {
         User existingUser = new User();
         existingUser.setUsername("testUser");
         existingUser.setEmail("testuser@test.com");
-
-        Role userRole = new Role();
-        userRole.setName("USER");
-        existingUser.setRoles(Collections.singleton(userRole));
 
         User updatedUserDetails = new User();
         updatedUserDetails.setUsername("testUser");
         updatedUserDetails.setEmail("updated@test.com");
 
-        // Mock findByUsername to return Optional of existingUser
+        // Mock userService calls
         when(userService.findByUsername("testUser")).thenReturn(existingUser);
         when(userService.saveUser(any(User.class))).thenReturn(updatedUserDetails);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-        logger.info("before put");
+
         mockMvc.perform(put("/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("testUser"))
                 .andExpect(jsonPath("$.email").value("updated@test.com"));
-        logger.info("after put");
 
+        // Verify
         verify(userService).findByUsername("testUser");
         verify(userService).saveUser(any(User.class));
     }
+
+    @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
+    public void testUpdateMyProfile_UserDoesNotExist() throws Exception {
+        User updatedUserDetails = new User();
+        updatedUserDetails.setUsername("testUser");
+        updatedUserDetails.setEmail("updated@test.com");
+
+        // Mock userService calls
+        when(userService.findByUsername("testUser")).thenReturn(null);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
+
+
+        mockMvc.perform(put("/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserJson))
+                .andExpect(status().isNotFound());
+
+        // Verify interactions with userService
+        verify(userService).findByUsername("testUser");
+    }
 }
+

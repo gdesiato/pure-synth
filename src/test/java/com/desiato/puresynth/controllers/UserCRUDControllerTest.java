@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Collections;
+import java.util.Optional;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -132,18 +133,21 @@ public class UserCRUDControllerTest {
         updatedUserDetails.setUsername("testUser");
         updatedUserDetails.setEmail("updated@test.com");
 
+        // Mock findByUsername to return Optional of existingUser
         when(userService.findByUsername("testUser")).thenReturn(existingUser);
         when(userService.saveUser(any(User.class))).thenReturn(updatedUserDetails);
 
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
 
+        logger.info("before put");
         mockMvc.perform(put("/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("testUser"))
                 .andExpect(jsonPath("$.email").value("updated@test.com"));
+        logger.info("after put");
 
         verify(userService).findByUsername("testUser");
         verify(userService).saveUser(any(User.class));

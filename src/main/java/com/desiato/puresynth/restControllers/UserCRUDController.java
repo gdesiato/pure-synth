@@ -55,13 +55,26 @@ public class UserCRUDController {
 
     // Update the logged-in user's profile
     @PutMapping("/me")
-    public ResponseEntity<User> updateMyProfile(@RequestBody User userDetails, Principal principal) {
-        return Optional.ofNullable(userService.findByUsername(principal.getName())).map(user -> {
+    public ResponseEntity<User> updateMyProfile(@RequestBody User userDetails, Authentication authentication) {
+        String username = authentication.getName();
+
+        // Retrieve the existing user by username
+        User user = userService.findByUsername(username);
+
+        if (user != null) {
+            // Update the user details
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
+
+            // Save the updated user
             User updatedUser = userService.saveUser(user);
+
+            // Return the updated user details
             return ResponseEntity.ok(updatedUser);
-        }).orElse(ResponseEntity.notFound().build());
+        } else {
+            // Return not found status if user doesn't exist
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/me")

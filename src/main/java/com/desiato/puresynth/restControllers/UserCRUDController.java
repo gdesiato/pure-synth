@@ -46,9 +46,9 @@ public class UserCRUDController {
     }
 
     // Fetch the logged-in user's profile
-    @GetMapping("/me")
-    public ResponseEntity<User> getMyProfile(Principal principal) {
-        return Optional.ofNullable(userService.findByUsername(principal.getName()))
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
+        return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

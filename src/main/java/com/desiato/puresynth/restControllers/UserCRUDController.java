@@ -54,14 +54,19 @@ public class UserCRUDController {
     }
 
     // Update the logged-in user's profile
-    @PutMapping("/me")
-    public ResponseEntity<User> updateMyProfile(@RequestBody User userDetails, Authentication authentication) {
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateMyProfile(@PathVariable Long id, @RequestBody User userDetails, Authentication authentication) {
         String username = authentication.getName();
+        Optional<User> optionalUser = userService.getUserById(id);
 
-        // Retrieve the existing user by username
-        User user = userService.findByUsername(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
 
-        if (user != null) {
+            // Check if the user matches the authenticated user
+            if (!user.getUsername().equals(username)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             // Update the user details
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
@@ -72,7 +77,7 @@ public class UserCRUDController {
             // Return the updated user details
             return ResponseEntity.ok(updatedUser);
         } else {
-            // Return not found status if user doesn't exist
+            // Return not found status if user with the given id doesn't exist
             return ResponseEntity.notFound().build();
         }
     }

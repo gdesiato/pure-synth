@@ -117,7 +117,7 @@ public class UserCRUDControllerTest {
     }
 
     @Test
-    //@WithMockUser(username = "testUser", roles = {"USER"})
+    @WithMockUser(username = "testUser", roles = {"USER"})
     public void testUpdateMyProfile_UserExists() throws Exception {
         User existingUser = new User();
         existingUser.setUsername("testUser");
@@ -160,7 +160,6 @@ public class UserCRUDControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-
         mockMvc.perform(put("/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserJson))
@@ -169,5 +168,6 @@ public class UserCRUDControllerTest {
         // Verify interactions with userService
         verify(userService).findByUsername("testUser");
     }
+
 }
 

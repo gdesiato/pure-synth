@@ -19,21 +19,21 @@ public class SecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http)
             throws Exception {
 
-        http.formLogin(form -> form
-                .loginPage("/login")
-                .failureUrl("/login?error")
-                .successHandler((request, response, authentication) -> {
-                    SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
-                    logger.info("Login successful for user: {}, with ID: {}", userDetails.getUsername(), userDetails.getId());
-                    response.sendRedirect("/user/" + userDetails.getId());
-                })
-                .permitAll()
-        );
+//        http.formLogin(form -> form
+//                .loginPage("/login")
+//                .failureUrl("/login?error")
+//                .successHandler((request, response, authentication) -> {
+//                    SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
+//                    logger.info("Login successful for user: {}, with ID: {}", userDetails.getUsername(), userDetails.getId());
+//                    response.sendRedirect("/user/" + userDetails.getId());
+//                })
+//                .permitAll()
+//        );
 
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/register").permitAll()
                         .requestMatchers("/login").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/users/register", "/api/users" ).permitAll()
                         .requestMatchers("/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "swagger-resources",

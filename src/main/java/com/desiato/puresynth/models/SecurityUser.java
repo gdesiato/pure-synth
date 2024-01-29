@@ -2,6 +2,8 @@ package com.desiato.puresynth.models;
 
 import jakarta.persistence.Entity;
 import lombok.Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 
 public class SecurityUser implements UserDetails {
 
+    private static final Logger logger = LoggerFactory.getLogger(SecurityUser.class);
     private final User user;
 
     public SecurityUser(User user) {
@@ -19,10 +22,18 @@ public class SecurityUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convert user roles to Spring Security GrantedAuthority objects
-        return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+        // Log the roles of the user
+        logger.info("Loading authorities for user: {}", user.getUsername());
+        Collection<? extends GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> {
+                    String roleName = "ROLE_" + role.getName(); // Ensure the ROLE_ prefix is used
+                    logger.info("Granting authority: {}", roleName);
+                    return new SimpleGrantedAuthority(roleName);
+                })
                 .collect(Collectors.toSet());
+
+        logger.info("Granted authorities for user {}: {}", user.getUsername(), authorities);
+        return authorities;
     }
 
     public User getUser() {

@@ -2,10 +2,13 @@ package com.desiato.puresynth.restControllers;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +18,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/users")
 public class UserCRUDController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserCRUDController.class);
 
     @Autowired
     private UserService userService;
@@ -56,30 +61,46 @@ public class UserCRUDController {
     // Update the logged-in user's profile
     @PutMapping("/{id}")
     public ResponseEntity<User> updateMyProfile(@PathVariable Long id, @RequestBody User userDetails, Authentication authentication) {
+        logger.info("Update Profile Request: UserID = {}, UserDetails = {}", id, userDetails);
+
+        // Check if the authenticated user has the 'ROLE_USER' authority
+        boolean hasUserRole = false;
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            if ("ROLE_USER".equals(authority.getAuthority())) {
+                hasUserRole = true;
+                break;
+            }
+        }
+
+        if (!hasUserRole) {
+            logger.warn("User does not have ROLE_USER authority");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         String username = authentication.getName();
         Optional<User> optionalUser = userService.getUserById(id);
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            // Check if the user matches the authenticated user
-            if (!user.getUsername().equals(username)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            // Update the user details
-            user.setUsername(userDetails.getUsername());
-            user.setEmail(userDetails.getEmail());
-
-            // Save the updated user
-            User updatedUser = userService.saveUser(user);
-
-            // Return the updated user details
-            return ResponseEntity.ok(updatedUser);
-        } else {
-            // Return not found status if user with the given id doesn't exist
+        if (!optionalUser.isPresent()) {
+            logger.warn("User with ID {} not found", id);
             return ResponseEntity.notFound().build();
         }
+
+        User user = optionalUser.get();
+        if (!user.getUsername().equals(username)) {
+            logger.warn("Authenticated user's username does not match the requested user's username");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // Update the user details
+        logger.info("Updating user details for user: {}", username);
+        user.setUsername(userDetails.getUsername());
+        user.setEmail(userDetails.getEmail());
+
+        // Save the updated user
+        User updatedUser = userService.saveUser(user);
+        logger.info("User details updated successfully for user: {}", username);
+
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/me")

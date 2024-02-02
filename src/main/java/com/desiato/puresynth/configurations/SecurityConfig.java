@@ -1,6 +1,5 @@
 package com.desiato.puresynth.configurations;
 
-import com.desiato.puresynth.models.SecurityUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -32,8 +31,6 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/register").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/users/**").hasRole("USER")
                         .requestMatchers("/api/users/register",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -41,6 +38,8 @@ public class SecurityConfig {
                                 "swagger-resources/**",
                                 "swagger-ui/**",
                                 "swagger-ui.html").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasRole("USER")
                         //.anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .anyRequest().permitAll()
 

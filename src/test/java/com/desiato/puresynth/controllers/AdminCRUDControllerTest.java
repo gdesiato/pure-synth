@@ -71,7 +71,7 @@ public class AdminCRUDControllerTest {
         when(userService.getAllUsers()).thenReturn(Arrays.asList(mockUser1, mockUser2));
 
         // Perform the GET request and assert the response
-        mockMvc.perform(get("/api/admin"))
+        mockMvc.perform(get("/api/admin/"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))  // Expecting 2 users in the list
                 .andExpect(jsonPath("$[0].username", is("user1")))
@@ -127,7 +127,7 @@ public class AdminCRUDControllerTest {
         String newUserJson = objectMapper.writeValueAsString(newUser);
 
         // Perform the POST request and assert the response
-        mockMvc.perform(post("/api/admin/users")
+        mockMvc.perform(post("/api/admin/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())

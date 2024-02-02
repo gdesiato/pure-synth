@@ -41,8 +41,8 @@ public class SecurityConfig {
                                 "swagger-resources/**",
                                 "swagger-ui/**",
                                 "swagger-ui.html").permitAll()
-                        .anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
-//                        .anyRequest().permitAll()
+                        //.anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
+                        .anyRequest().permitAll()
 
         );
 

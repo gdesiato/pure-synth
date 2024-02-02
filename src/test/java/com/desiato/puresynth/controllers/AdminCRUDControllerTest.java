@@ -71,7 +71,7 @@ public class AdminCRUDControllerTest {
         when(userService.getAllUsers()).thenReturn(Arrays.asList(mockUser1, mockUser2));
 
         // Perform the GET request and assert the response
-        mockMvc.perform(get("/api/admin/users"))
+        mockMvc.perform(get("/api/admin"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))  // Expecting 2 users in the list
                 .andExpect(jsonPath("$[0].username", is("user1")))
@@ -91,7 +91,7 @@ public class AdminCRUDControllerTest {
 
         when(userService.getUserById(1L)).thenReturn(Optional.of(mockUser));
 
-        mockMvc.perform(get("/api/admin/users/{id}", 1L))
+        mockMvc.perform(get("/api/admin/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.username", is("user1")))
@@ -105,7 +105,7 @@ public class AdminCRUDControllerTest {
         when(userService.getUserById(2L)).thenReturn(Optional.empty());
 
         // for non-existing user
-        mockMvc.perform(get("/api/admin/users/{id}", 2L))
+        mockMvc.perform(get("/api/admin/{id}", 2L))
                 .andExpect(status().isNotFound());
     }
 
@@ -162,7 +162,7 @@ public class AdminCRUDControllerTest {
         String userJson = objectMapper.writeValueAsString(updatedUserDetails);
 
         // PUT request
-        mockMvc.perform(put("/api/admin/users/{id}", userId)
+        mockMvc.perform(put("/api/admin/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isOk())
@@ -193,7 +193,7 @@ public class AdminCRUDControllerTest {
         String userJson = objectMapper.writeValueAsString(updatedUserDetails);
 
         // PUT request
-        mockMvc.perform(put("/api/admin/users/{id}", userId)
+        mockMvc.perform(put("/api/admin/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isNotFound());
@@ -211,7 +211,7 @@ public class AdminCRUDControllerTest {
 
         when(userService.getUserById(userId)).thenReturn(Optional.of(new User()));
 
-        mockMvc.perform(delete("/api/admin/users/{id}", userId))
+        mockMvc.perform(delete("/api/admin/{id}", userId))
                 .andExpect(status().isOk());
 
         // Verify interactions with userService
@@ -226,7 +226,7 @@ public class AdminCRUDControllerTest {
 
         when(userService.getUserById(userId)).thenReturn(Optional.empty());
 
-        mockMvc.perform(delete("/api/admin/users/{id}", userId))
+        mockMvc.perform(delete("/api/admin/{id}", userId))
                 .andExpect(status().isNotFound());
 
         verify(userService).getUserById(userId);

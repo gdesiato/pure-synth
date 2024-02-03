@@ -103,11 +103,14 @@ public class UserCRUDController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @DeleteMapping("/me")
-    public ResponseEntity<?> deleteMyProfile(Principal principal) {
-        return Optional.ofNullable(userService.findByUsername(principal.getName())).map(user -> {
-            userService.deleteUser(user.getId());
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProfileById(@PathVariable Long id) {
+        Optional<User> userOptional = userService.getUserById(id);
+        if (userOptional.isPresent()) {
+            userService.deleteUser(userOptional.get().getId());
             return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

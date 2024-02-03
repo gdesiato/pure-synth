@@ -136,17 +136,19 @@ public class UserCRUDControllerTest {
         // Verify userService was called with the correct parameters
         verify(userService).getUserById(userId);
         verify(userService).saveUser(any(User.class));
+
+        //verify(userService, times(2)).saveUser(any(User.class));
+
     }
 
     @Test
     @WithMockUser(username = "testUser", roles = {"USER"})
     public void testUpdateMyProfile_UserDoesNotExist() throws Exception {
 
+        Long userId = 1L;
         User updatedUserDetails = new User();
         updatedUserDetails.setUsername("testUser");
         updatedUserDetails.setEmail("updated@test.com");
-
-        Long userId = 1L;
 
         when(userService.getUserById(userId)).thenReturn(Optional.empty());
 

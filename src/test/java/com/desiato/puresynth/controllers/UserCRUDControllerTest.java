@@ -163,5 +163,36 @@ public class UserCRUDControllerTest {
         verify(userService).getUserById(userId);
     }
 
+
+    @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
+    public void deleteUser_WhenUserExists() throws Exception {
+
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+
+        when(userService.getUserById(userId)).thenReturn(Optional.of(user));
+
+        mockMvc.perform(delete("/api/users/{id}", userId))
+                .andExpect(status().isOk());
+
+        verify(userService).deleteUser(userId);
+    }
+
+    @Test
+    @WithMockUser(username = "testUser", roles = {"USER"})
+    public void deleteUser_WhenUserDoesNotExist() throws Exception {
+
+        Long userId = 2L;
+
+        when(userService.getUserById(userId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(delete("/api/users/{id}", userId))
+                .andExpect(status().isNotFound());
+
+        verify(userService, never()).deleteUser(anyLong());
+    }
+
 }
 

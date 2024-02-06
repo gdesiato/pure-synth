@@ -16,18 +16,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http)
-            throws Exception {
-
-//        http.formLogin(form -> form
-//                .loginPage("/login")
-//                .failureUrl("/login?error")
-//                .successHandler((request, response, authentication) -> {
-//                    SecurityUser userDetails = (SecurityUser) authentication.getPrincipal();
-//                    logger.info("Login successful for user: {}, with ID: {}", userDetails.getUsername(), userDetails.getId());
-//                    response.sendRedirect("/user/" + userDetails.getId());
-//                })
-//                .permitAll()
-//        );
+            throws Exception {;
 
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/register").permitAll()

@@ -4,7 +4,6 @@ import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.repositories.UserRepository;
-import com.desiato.puresynth.restControllers.AdminCRUDController;
 import com.desiato.puresynth.services.UserService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

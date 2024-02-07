@@ -5,7 +5,6 @@ import com.desiato.puresynth.models.Role;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.repositories.UserRepository;
-import com.desiato.puresynth.restControllers.UserCRUDController;
 import com.desiato.puresynth.services.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

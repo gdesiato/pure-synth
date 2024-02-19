@@ -1,4 +1,4 @@
-package com.desiato.puresynth.controllers;
+package com.desiato.puresynth.restControllers;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.BDDMockito.*;

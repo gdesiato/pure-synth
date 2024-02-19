@@ -1,4 +1,4 @@
-package com.desiato.puresynth.controllers;
+package com.desiato.puresynth.restControllers;
 
 import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.models.Role;

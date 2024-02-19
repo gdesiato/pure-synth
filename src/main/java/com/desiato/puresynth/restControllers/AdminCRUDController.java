@@ -1,4 +1,4 @@
-package com.desiato.puresynth.controllers;
+package com.desiato.puresynth.restControllers;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;

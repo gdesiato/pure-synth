@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorate="~{fragments/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+
+</head>
+
+<body>
+
+<div layout:fragment="content" th:remove="tag">
+
+    <h1>Welcome, <span th:text="${username}"></span>!</h1>
+    <h1>This is the USER dashboard</h1>
+    <p>Your roles are:</p>
+    <ul>
+        <li th:each="authority : ${roles}" th:text="${authority.authority}"></li>
+    </ul>
+
+</div>
+
+</body>
+</html>

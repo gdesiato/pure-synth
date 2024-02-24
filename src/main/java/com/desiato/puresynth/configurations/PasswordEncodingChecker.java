@@ -26,9 +26,9 @@ public class PasswordEncodingChecker implements ApplicationRunner {
 
         System.out.println("Encoded password: " + encodedPassword);
 
-        boolean doesMatch = passwordEncoder
-                .matches("defaultPassword",
-                        "$2a$10$3QrBY238gFMSmJJWsYTXtutjrX4vSNGEXe42t6SMSibfGjXzn/qZy");
+        boolean doesMatch = passwordEncoder.matches(
+                "defaultPassword",
+                "$2a$10$3QrBY238gFMSmJJWsYTXtutjrX4vSNGEXe42t6SMSibfGjXzn/qZy");
 
         System.out.println("Password matches: " + doesMatch);
 

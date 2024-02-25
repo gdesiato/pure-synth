@@ -26,7 +26,7 @@ public class SecurityUser implements UserDetails {
         logger.info("Loading authorities for user: {}", user.getUsername());
         Collection<? extends GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> {
-                    String roleName = "ROLE_" + role.getName(); // Ensure the ROLE_ prefix is used
+                    String roleName = "ROLE_" + role.getName();
                     logger.info("Granting authority: {}", roleName);
                     return new SimpleGrantedAuthority(roleName);
                 })

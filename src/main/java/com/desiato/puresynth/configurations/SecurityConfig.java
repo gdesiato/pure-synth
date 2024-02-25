@@ -22,7 +22,7 @@ public class SecurityConfig {
 
         http.formLogin(form -> form
                 .loginPage("/mvc/login")
-                .loginProcessingUrl("/mvc/login")
+                .loginProcessingUrl("/mvc/login-process")
                 .defaultSuccessUrl("/mvc/user", true)
                 .permitAll()
         );

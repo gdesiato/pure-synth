@@ -5,6 +5,7 @@ import com.desiato.puresynth.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -31,22 +32,40 @@ public class ViewAudio {
         return "testView";
     }
 
+//    @GetMapping("/user")
+//    public String userProfile(Model model) {
+//        log.info("Attempting to access user profile page");
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Object principal = authentication.getPrincipal();
+//
+//        if (principal instanceof SecurityUser) {
+//            SecurityUser securityUser = (SecurityUser) principal;
+//            User user = securityUser.getUser(); //User object
+//
+//            log.info("User {} authenticated successfully, loading user page.", user.getUsername());
+//            model.addAttribute("user", user);
+//            return "userPage";
+//        } else {
+//            log.info("User principal is not instance of SecurityUser, redirecting to login");
+//            return "redirect:/mvc/login"; // Redirect to the login page if the user details are not found
+//        }
+//    }
+
     @GetMapping("/user")
-    public String userProfile(Model model) {
-        log.info("Attempting to access user profile page");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
+    public String userProfile(Model model, @AuthenticationPrincipal SecurityUser securityUser) {
+        log.debug("Entering userProfile method");
 
-        if (principal instanceof SecurityUser) {
-            SecurityUser securityUser = (SecurityUser) principal;
-            User user = securityUser.getUser(); //User object
+        if (securityUser != null) {
+            log.debug("SecurityUser is not null, proceeding with user profile page");
 
-            log.info("User {} authenticated successfully, loading user page.", user.getUsername());
+            User user = securityUser.getUser();
+            log.debug("Loaded user: {}", user.getUsername());
+
             model.addAttribute("user", user);
             return "userPage";
         } else {
-            log.info("User principal is not instance of SecurityUser, redirecting to login");
-            return "redirect:/mvc/login"; // Redirect to the login page if the user details are not found
+            log.debug("SecurityUser is null, redirecting to login page");
+            return "redirect:/mvc/login";
         }
     }
 

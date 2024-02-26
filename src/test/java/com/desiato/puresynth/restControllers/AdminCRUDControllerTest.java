@@ -1,6 +1,7 @@
 package com.desiato.puresynth.restControllers;
 
 import com.desiato.puresynth.configurations.SecurityConfig;
+import com.desiato.puresynth.models.Role;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.RoleRepository;
 import com.desiato.puresynth.repositories.UserRepository;
@@ -21,12 +22,14 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -53,7 +56,6 @@ public class AdminCRUDControllerTest {
 
 
     @Test
-    // mocking authenticated user to access the protected endpoint /api/admin/users
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     public void testGetAllUsers() throws Exception {
 
@@ -70,7 +72,7 @@ public class AdminCRUDControllerTest {
         when(userService.getAllUsers()).thenReturn(Arrays.asList(mockUser1, mockUser2));
 
         // Perform the GET request and assert the response
-        mockMvc.perform(get("/api/admin/"))
+        mockMvc.perform(get("/api/admin"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))  // Expecting 2 users in the list
                 .andExpect(jsonPath("$[0].username", is("user1")))
@@ -114,6 +116,10 @@ public class AdminCRUDControllerTest {
         User newUser = new User();
         newUser.setUsername("newUser");
         newUser.setEmail("newUser@example.com");
+        newUser.setPassword("newPassword");
+
+        Role userRole = new Role("ROLE_USER");
+        newUser.setRoles(Set.of(userRole));
 
         // Simulate that the user does not exist already
         when(userService.findByUsername("newUser")).thenReturn(null);
@@ -125,13 +131,16 @@ public class AdminCRUDControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String newUserJson = objectMapper.writeValueAsString(newUser);
 
-        // Perform the POST request and assert the response
-        mockMvc.perform(post("/api/admin/")
+        // Perform the POST request
+        mockMvc.perform(post("/api/admin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username", is(newUser.getUsername())))
-                .andExpect(jsonPath("$.email", is(newUser.getEmail())));
+                .andExpect(jsonPath("$.username").value("newUser"))
+                .andExpect(jsonPath("$.email").value("newUser@example.com"))
+                .andExpect(jsonPath("$.password").value("newPassword"))
+                .andExpect(jsonPath("$.roles[0].name").value("ROLE_USER"))
+                .andDo(print());
     }
 
     @Test

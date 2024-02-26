@@ -16,6 +16,11 @@ public class AdminCRUDController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/")
+    public String testMapping() {
+        return "Controller is reachable";
+    }
+
     // Fetch all users
     @GetMapping
     public List<User> getAllUsers() {

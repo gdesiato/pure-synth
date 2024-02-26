@@ -30,6 +30,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/register").permitAll()
                         .requestMatchers("/api/users/register",
+                                "/mvc/login",
                                 "/mvc/*",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -37,8 +38,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/users/**").hasRole("USER")
+                        .requestMatchers("/api/admin","/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("api/users","/api/users/**").hasRole("USER")
                         .requestMatchers("/mvc/user/**").hasRole("USER")
                         //.anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .anyRequest().permitAll()

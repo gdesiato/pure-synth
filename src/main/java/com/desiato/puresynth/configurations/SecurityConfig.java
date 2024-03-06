@@ -20,18 +20,9 @@ public class SecurityConfig {
 
         http.httpBasic(Customizer.withDefaults());
 
-        http.formLogin(form -> form
-                .loginPage("/mvc/login")
-                .loginProcessingUrl("/mvc/login-process")
-                .defaultSuccessUrl("/mvc/user", true)
-                .permitAll()
-        );
-
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/register").permitAll()
                         .requestMatchers("/api/users/register",
-                                "/mvc/login",
-                                "/mvc/*",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",
@@ -40,8 +31,6 @@ public class SecurityConfig {
                                 "/swagger-ui.html").permitAll()
                         .requestMatchers("/api/admin","/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("api/users","/api/users/**").hasRole("USER")
-                        .requestMatchers("/mvc/user/**").hasRole("USER")
-                        //.anyRequest().hasAnyAuthority("ROLE_ADMIN", "ROLE_USER")
                         .anyRequest().permitAll()
 
         );

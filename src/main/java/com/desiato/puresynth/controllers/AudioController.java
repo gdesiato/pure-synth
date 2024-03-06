@@ -1,4 +1,4 @@
-package com.desiato.puresynth.restControllers;
+package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.models.AudioRequest;
 import com.desiato.puresynth.services.AudioService;

@@ -1,4 +1,4 @@
-package com.desiato.puresynth.restControllers;
+package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.models.Role;
@@ -28,9 +28,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(UserCRUDController.class)
+@WebMvcTest(UserController.class)
 @Import(SecurityConfig.class)
-public class UserCRUDControllerTest {
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +47,7 @@ public class UserCRUDControllerTest {
     @MockBean
     private PasswordEncoder passwordEncoder;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserCRUDControllerTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserControllerTest.class);
 
 
 

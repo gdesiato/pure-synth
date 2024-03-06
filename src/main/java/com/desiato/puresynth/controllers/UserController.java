@@ -1,4 +1,4 @@
-package com.desiato.puresynth.restControllers;
+package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
@@ -16,9 +16,9 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserCRUDController {
+public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserCRUDController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;

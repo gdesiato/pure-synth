@@ -1,4 +1,4 @@
-package com.desiato.puresynth.restControllers;
+package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.UserService;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-public class AdminCRUDController {
+public class AdminController {
 
     @Autowired
     private UserService userService;

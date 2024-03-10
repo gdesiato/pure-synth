@@ -22,15 +22,15 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 c -> c.requestMatchers("/register").permitAll()
-                        .requestMatchers("/user/register",
+                        .requestMatchers("/api/user/register",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",
                                 "/swagger-resources/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html").permitAll()
-                        .requestMatchers("/admin","/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user","/user/**").hasRole("USER")
+                        .requestMatchers("/api/admin","/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user","/api/user/**").hasRole("USER")
                         .anyRequest().permitAll()
 
         );

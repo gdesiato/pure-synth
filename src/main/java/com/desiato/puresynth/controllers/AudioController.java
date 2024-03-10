@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.io.File;
 
 @RestController
-@RequestMapping("/audio")
+@RequestMapping("/api/audio")
 public class AudioController {
 
     @Value("${audio.files.directory}")

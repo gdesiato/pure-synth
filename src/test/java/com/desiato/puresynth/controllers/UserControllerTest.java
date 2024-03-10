@@ -54,7 +54,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     public void testHelloApi() throws Exception {
-        mockMvc.perform(get("/api/users"))
+        mockMvc.perform(get("/api/user"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("hello api"));
     }
@@ -62,7 +62,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "testuser")
     public void testUserInfo() throws Exception {
-        mockMvc.perform(get("/api/users/info"))
+        mockMvc.perform(get("/api/user/info"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Access granted for user: testuser"));
     }
@@ -88,7 +88,7 @@ public class UserControllerTest {
         String newUserJson = objectMapper.writeValueAsString(newUser);
 
         logger.info("Performing POST request to register a new user");
-        mockMvc.perform(post("/api/users/register")
+        mockMvc.perform(post("/api/user/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())
@@ -125,7 +125,7 @@ public class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-        mockMvc.perform(put("/api/users/{id}", userId)
+        mockMvc.perform(put("/api/user/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserJson))
                 .andExpect(status().isOk())
@@ -154,7 +154,7 @@ public class UserControllerTest {
         ObjectMapper objectMapper = new ObjectMapper();
         String updatedUserJson = objectMapper.writeValueAsString(updatedUserDetails);
 
-        mockMvc.perform(put("/api/users/{id}", userId)
+        mockMvc.perform(put("/api/user/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedUserJson))
                 .andExpect(status().isNotFound());
@@ -173,7 +173,7 @@ public class UserControllerTest {
 
         when(userService.getUserById(userId)).thenReturn(Optional.of(user));
 
-        mockMvc.perform(delete("/api/users/{id}", userId))
+        mockMvc.perform(delete("/api/user/{id}", userId))
                 .andExpect(status().isOk());
 
         verify(userService).deleteUser(userId);
@@ -187,7 +187,7 @@ public class UserControllerTest {
 
         when(userService.getUserById(userId)).thenReturn(Optional.empty());
 
-        mockMvc.perform(delete("/api/users/{id}", userId))
+        mockMvc.perform(delete("/api/user/{id}", userId))
                 .andExpect(status().isNotFound());
 
         verify(userService, never()).deleteUser(anyLong());

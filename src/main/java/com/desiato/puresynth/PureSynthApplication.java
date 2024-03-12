@@ -8,13 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Set;
-
 
 @SpringBootApplication
 public class PureSynthApplication implements CommandLineRunner {
@@ -30,24 +27,6 @@ public class PureSynthApplication implements CommandLineRunner {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PureSynthApplication.class, args);
-	}
-
-	@Bean
-	CommandLineRunner commandLineRunner(JdbcConnectionDetails jdbc){
-		return args -> {
-			var details = """
-                      class: %s
-                      JDBC URL: %s
-                      Username: %s
-                      Password: %s
-                      """.formatted(
-					jdbc.getClass().getName(),
-					jdbc.getJdbcUrl(),
-					jdbc.getUsername(),
-					jdbc.getPassword()
-			);
-			System.out.println(details);
-		};
 	}
 
 	@Override

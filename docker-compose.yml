@@ -3,6 +3,8 @@ version: "3.8"
 services:
   db:
     image: mysql:8.0.23
+    volumes:
+      - db-data:/var/lib/mysql
     restart: always
     environment:
       MYSQL_DATABASE: puresynth
@@ -11,3 +13,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3307:3306"
+
+volumes:
+  db-data:

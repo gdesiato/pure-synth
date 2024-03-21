@@ -24,6 +24,9 @@ public class PasswordEncodingChecker implements ApplicationRunner {
         String rawPassword = "defaultPassword";
         String encodedPassword = passwordEncoder.encode(rawPassword);
 
+        String rawPasswordAdmin = "adminPassword";
+        String encodedPasswordAdmin = passwordEncoder.encode(rawPasswordAdmin);
+
         System.out.println("Encoded password: " + encodedPassword);
 
         boolean doesMatch = passwordEncoder.matches(
@@ -31,6 +34,14 @@ public class PasswordEncodingChecker implements ApplicationRunner {
                 "$2a$10$3QrBY238gFMSmJJWsYTXtutjrX4vSNGEXe42t6SMSibfGjXzn/qZy");
 
         System.out.println("Password matches: " + doesMatch);
+
+        System.out.println("Encoded admin password: " + encodedPasswordAdmin);
+        boolean doesMatch2 = passwordEncoder.matches(
+                "adminPassword",
+                "$2a$10$.NaOgXx1gYXY0BKsrh2l/O7TDPr6B/seZR3/r/tdfHUzaCLexDTCC");
+
+        System.out.println("Password admin matches: " + doesMatch2);
+
 
     }
 

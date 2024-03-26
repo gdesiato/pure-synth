@@ -2,6 +2,7 @@ package com.desiato.puresynth.services;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.UserRepository;
+import io.swagger.v3.oas.models.info.Contact;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,19 +32,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-    public User findByUsernameAndPassword(String username, String password) {
-        User user = userRepository.findByUsername(username);
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return user;
-        }
-        return null;
-    }
 }

@@ -1,19 +1,19 @@
 version: "3.8"
 
 services:
-  mysql:
+  db:
     image: mysql:8.0.23
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
     environment:
       MYSQL_DATABASE: puresynth
-      MYSQL_USER: puresynth
-      MYSQL_PASSWORD: puresynth
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "3307:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-    restart: always
 
 volumes:
-  mysql-data:
-    driver: local
+  db-data:
+

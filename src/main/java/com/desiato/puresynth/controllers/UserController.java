@@ -28,88 +28,39 @@ public class UserController {
         return "hello api";
     }
 
-    @GetMapping("/info")
-    public String userInfo() {
-        // Fetching the current authenticated user's details
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // Gets the username of the authenticated user
-
-        return "Access granted for user: " + username;
-    }
-
-    // Create a new user (open endpoint) - register yourself
-    @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@RequestBody User newUser) {
-        if (userService.findByUsername(newUser.getUsername()) != null) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Username already exists");
-        }
-        User registeredUser = userService.saveUser(newUser);
-        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
-    }
-
-    // Fetch the logged-in user's profile
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
-                .map(ResponseEntity::ok)
+                .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Update the logged-in user's profile
+    @PostMapping
+    public ResponseEntity<Object> createUser(@RequestBody User newUser) {
+        if (userService.findByEmail(newUser.getEmail()) != null) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("User already exists");
+        }
+        User createdUser = userService.saveUser(newUser);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateMyProfile(@PathVariable Long id, @RequestBody User userDetails, Authentication authentication) {
-        logger.info("Update Profile Request: UserID = {}, UserDetails = {}", id, userDetails);
-
-        // Check if the authenticated user has the 'ROLE_USER' authority
-        boolean hasUserRole = false;
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_USER".equals(authority.getAuthority())) {
-                hasUserRole = true;
-                break;
-            }
-        }
-
-        if (!hasUserRole) {
-            logger.warn("User does not have ROLE_USER authority");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        String username = authentication.getName();
-        Optional<User> optionalUser = userService.getUserById(id);
-
-        if (!optionalUser.isPresent()) {
-            logger.warn("User with ID {} not found", id);
-            return ResponseEntity.notFound().build();
-        }
-
-        User user = optionalUser.get();
-        if (!user.getUsername().equals(username)) {
-            logger.warn("Authenticated user's username does not match the requested user's username");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        // Update the user details
-        logger.info("Updating user details for user: {}", username);
-        user.setUsername(userDetails.getUsername());
-        user.setEmail(userDetails.getEmail());
-
-        // Save the updated user
-        User updatedUser = userService.saveUser(user);
-        logger.info("User details updated successfully for user: {}", username);
-
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+        return userService.getUserById(id).map(user -> {
+            user.setEmail(userDetails.getEmail());
+            User updatedUser = userService.saveUser(user);
+            return ResponseEntity.ok(updatedUser);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProfileById(@PathVariable Long id) {
-        Optional<User> userOptional = userService.getUserById(id);
-        if (userOptional.isPresent()) {
-            userService.deleteUser(userOptional.get().getId());
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        return userService.getUserById(id).map(user -> {
+            userService.deleteUser(id);
             return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

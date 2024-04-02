@@ -14,15 +14,5 @@ services:
     ports:
       - "3307:3306"
 
-  flyway:
-    image: flyway/flyway
-    command: [ "-url=jdbc:mysql://db:3306/puresynth?allowPublicKeyRetrieval=true&useSSL=false", "-user=puresynth", "-password=puresynth", "clean", "migrate" ]
-    environment:
-      - FLYWAY_CLEAN_DISABLED=false
-    volumes:
-      - ./src/main/resources/db/migration:/flyway/sql
-    depends_on:
-      - db
-
 volumes:
   db-data:

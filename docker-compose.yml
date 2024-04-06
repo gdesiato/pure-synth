@@ -19,9 +19,10 @@ services:
     depends_on:
       - mysql
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/yourdbname?useSSL=false&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: password
+      MYSQL_DATABASE: puresynth
+      MYSQL_USER: puresynth
+      MYSQL_PASSWORD: puresynth
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     ports:
       - "8080:8080"
     restart: always

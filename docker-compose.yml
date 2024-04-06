@@ -1,28 +1,31 @@
 version: "3.8"
 
 services:
-  db:
+  mysql:
     image: mysql:8.0.23
-    volumes:
-      - db-data:/var/lib/mysql
-    restart: always
     environment:
-      MYSQL_DATABASE: puresynth
-      MYSQL_USER: puresynth
-      MYSQL_PASSWORD: puresynth
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: 'yourdbname'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'rootpassword'
     ports:
-      - "3307:3306"
-
-  flyway:
-    image: flyway/flyway
-    command: [ "-url=jdbc:mysql://db:3306/puresynth?allowPublicKeyRetrieval=true&useSSL=false", "-user=puresynth", "-password=puresynth", "clean", "migrate" ]
-    environment:
-      - FLYWAY_CLEAN_DISABLED=false
+      - "3306:3306"
     volumes:
-      - ./src/main/resources/db/migration:/flyway/sql
+      - mysql-data:/var/lib/mysql
+    restart: always
+
+  app:
+    image: your-spring-boot-app:latest
     depends_on:
-      - db
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/yourdbname?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8080:8080"
+    restart: always
 
 volumes:
-  db-data:
+  mysql-data:
+    driver: local

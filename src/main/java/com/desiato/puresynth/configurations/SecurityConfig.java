@@ -9,37 +9,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-//@Configuration
-//@EnableWebSecurity(debug = true)
-//public class SecurityConfig {
-//
-//    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
-//
-//    @Bean
-//    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-//
-//        http.httpBasic(Customizer.withDefaults());
-//
-//        http.authorizeHttpRequests(
-//                c -> c.requestMatchers("/register").permitAll()
-//                        .requestMatchers("/api/user/register",
-//                                "/v3/api-docs",
-//                                "/v3/api-docs/**",
-//                                "/swagger-resources",
-//                                "/swagger-resources/**",
-//                                "/swagger-ui/**",
-//                                "/swagger-ui.html").permitAll()
-//                        .requestMatchers("/api/admin","/api/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/api/user","/api/user/**").hasRole("USER")
-//                        .anyRequest().permitAll()
-//
-//        );
-//
-//        http.csrf(
-//                c -> c.disable()
-//        );
-//
-//        return http.build();
-//    }
-//
-//}
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+}

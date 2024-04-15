@@ -1,6 +1,9 @@
 package com.desiato.puresynth.models;
 
 import com.desiato.puresynth.configurations.SecurityConfig;
+import com.desiato.puresynth.repositories.UserRepository;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,7 +23,17 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @BeforeEach
+    @Transactional
+    public void setup() {
+        userRepository.deleteByEmail("test3@example.com");
+    }
+
     @Test
+    @Transactional
     public void createUser_ShouldReturnCreatedUser() throws Exception {
         String newUserJson = """
         {

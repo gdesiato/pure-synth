@@ -22,10 +22,6 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    public String generateUniqueEmail() {
-        return "test_" + System.currentTimeMillis() + "@example.com";
-    }
-
     @Test
     public void createUser_ShouldReturnCreatedUser() throws Exception {
         String uniqueEmail = generateUniqueEmail();
@@ -41,6 +37,10 @@ public class UserControllerTest {
                         .content(newUserJson))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value(uniqueEmail));
+    }
+
+    private String generateUniqueEmail() {
+        return "test_" + System.currentTimeMillis() + "@example.com";
     }
 
 }

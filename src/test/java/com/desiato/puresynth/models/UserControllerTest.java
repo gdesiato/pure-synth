@@ -1,9 +1,6 @@
 package com.desiato.puresynth.models;
 
-import com.desiato.puresynth.configurations.SecurityConfig;
 import com.desiato.puresynth.repositories.UserRepository;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,36 +14,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(com.desiato.puresynth.configurations.SecurityConfig.class)
 public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    @BeforeEach
-    @Transactional
-    public void setup() {
-        userRepository.deleteByEmail("test3@example.com");
+    public String generateUniqueEmail() {
+        return "test_" + System.currentTimeMillis() + "@example.com";
     }
 
     @Test
-    @Transactional
     public void createUser_ShouldReturnCreatedUser() throws Exception {
+        String uniqueEmail = generateUniqueEmail();
         String newUserJson = """
-        {
-            "email": "test3@example.com",
-            "password": "password123"
-        }
-        """;
+    {
+        "email": "%s",
+        "password": "password123"
+    }
+    """.formatted(uniqueEmail);
 
         mockMvc.perform(post("/api/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value("test3@example.com"));
+                .andExpect(jsonPath("$.email").value(uniqueEmail));
     }
 
 }

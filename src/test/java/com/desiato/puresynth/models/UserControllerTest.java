@@ -1,6 +1,7 @@
 package com.desiato.puresynth.models;
 
 import com.desiato.puresynth.repositories.UserRepository;
+import com.desiato.puresynth.services.UserService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,6 +27,9 @@ public class UserControllerTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserService userService;
 
 
     @Test
@@ -47,24 +52,19 @@ public class UserControllerTest {
 
     @Test
     public void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
+        // Given
         String uniqueEmail = generateUniqueEmail();
-        String newUserJson = String.format("""
-    {
-        "email": "%s",
-        "password": "password123"
-    }
-    """, uniqueEmail);
+        User createdUser = userService.createUser(uniqueEmail, "password123");
+        Long userId = createdUser.getId();
 
-        MvcResult result = mockMvc.perform(post("/api/user")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(newUserJson))
-                .andExpect(status().isCreated())
-                .andReturn();
-
-        Long userId = JsonPath.parse(result.getResponse().getContentAsString()).read("$.id", Long.class);
-
+        // When
         mockMvc.perform(delete("/api/user/" + userId))
                 .andExpect(status().isOk());
+
+        // Then
+        mockMvc.perform(get("/api/user/" + userId))
+                .andExpect(status().isNotFound())
+                .andReturn();
     }
 
     private String generateUniqueEmail() {

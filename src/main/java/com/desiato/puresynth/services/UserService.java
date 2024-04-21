@@ -40,4 +40,10 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public User createUser(String email, String password) {
+        User newUser = new User(email, password);
+        userRepository.save(newUser);
+        return newUser;
+    }
+
 }

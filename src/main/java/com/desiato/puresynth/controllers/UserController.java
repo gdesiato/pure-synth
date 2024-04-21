@@ -18,8 +18,6 @@ import java.util.Optional;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
     @Autowired
     private UserService userService;
 
@@ -46,21 +44,22 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        return userService.getUserById(id).map(user -> {
-            user.setEmail(userDetails.getEmail());
-            User updatedUser = userService.saveUser(user);
-            return ResponseEntity.ok(updatedUser);
-        }).orElse(ResponseEntity.notFound().build());
+        return userService.getUserById(id)
+                .map(user -> {user.setEmail(userDetails.getEmail());
+                    User updatedUser = userService.saveUser(user);
+                    return ResponseEntity.ok(updatedUser);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        return userService.getUserById(id).map(user -> {
-            userService.deleteUser(id);
-            return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
+        return userService.getUserById(id)
+                .map(user -> {userService.deleteUser(id);
+                    return ResponseEntity.ok().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -65,7 +65,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getUser_ShouldReturnUSer()throws Exception {
+    public void getUser_ShouldReturnUser()throws Exception {
         User existingUser = userService.createUser(generateUniqueEmail(), "password123" );
 
         // When & Then

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -20,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public String helloApi(){
@@ -40,6 +44,7 @@ public class UserController {
                     .status(HttpStatus.CONFLICT)
                     .body("User already exists");
         }
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         User createdUser = userService.saveUser(newUser);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }

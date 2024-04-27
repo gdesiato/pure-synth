@@ -1,5 +1,6 @@
-package com.desiato.puresynth.models;
+package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.UserRepository;
 import com.desiato.puresynth.services.UserService;
 import org.junit.jupiter.api.Test;

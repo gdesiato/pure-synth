@@ -22,13 +22,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").authenticated()
-                        .requestMatchers("/homepage").authenticated()
-                        .anyRequest().permitAll()
-                )
-                .formLogin(form -> form
-                        .defaultSuccessUrl("/homepage", true)
-                        .permitAll()
+                        .requestMatchers("/api/login/").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
@@ -37,22 +32,5 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable());
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        var user = new InMemoryUserDetailsManager();
-
-        String encodedPassword = passwordEncoder.encode("user");
-
-        user.createUser(
-                User.withUsername("user@mail.com")
-                        .password(encodedPassword)
-                        .authorities("read")
-                        .build()
-        );
-
-
-        return user;
     }
 }

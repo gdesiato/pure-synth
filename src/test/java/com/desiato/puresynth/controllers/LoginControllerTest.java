@@ -1,14 +1,10 @@
 package com.desiato.puresynth.controllers;
 
-import com.desiato.puresynth.models.LoginDTO;
+import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.repositories.UserRepository;
-import com.desiato.puresynth.services.CustomAuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,18 +15,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class LoginControllerTest {
+public class LoginControllerTest extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private CustomAuthenticationService authService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
@@ -45,7 +33,12 @@ public class LoginControllerTest {
         String password = "password123";
         User createdUser = userService.createUser(uniqueEmail, passwordEncoder.encode(password));
 
-        String json = "{\"email\":\"" + uniqueEmail + "\", \"password\":\"" + password + "\"}";
+        String json = """
+                {
+                    "email": "%s",
+                    "password": "%s"
+                }
+                """.formatted(uniqueEmail, password);
 
         mockMvc.perform(post("/api/login/")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -61,7 +54,12 @@ public class LoginControllerTest {
         userService.createUser(uniqueEmail, passwordEncoder.encode(validPassword));
 
         String invalidPassword = "invalidPassword";
-        String json = "{\"email\":\"" + uniqueEmail + "\", \"password\":\"" + invalidPassword + "\"}";
+        String json = """
+                {
+                    "email": "%s",
+                    "password": "%s"
+                }
+                """.formatted(uniqueEmail, invalidPassword);
 
         mockMvc.perform(post("/api/login/")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,8 +74,13 @@ public class LoginControllerTest {
         String password = "password123";
         userService.createUser(uniqueEmail, passwordEncoder.encode(password));
 
-        String invalidEmail = "nonUser";
-        String json = "{\"email\":\"" + invalidEmail + "\", \"password\":\"" + password + "\"}";
+        String invalidEmail = "nonUser@mail.com";
+        String json = """
+                {
+                    "email": "%s",
+                    "password": "%s"
+                }
+                """.formatted(invalidEmail, password);
 
         mockMvc.perform(post("/api/login/")
                         .contentType(MediaType.APPLICATION_JSON)

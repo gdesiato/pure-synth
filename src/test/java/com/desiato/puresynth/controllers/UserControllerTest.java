@@ -1,12 +1,11 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.UserRepository;
 import com.desiato.puresynth.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -16,9 +15,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class UserControllerTest {
+public class UserControllerTest extends BaseTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,7 +25,6 @@ public class UserControllerTest {
 
     @Autowired
     private UserService userService;
-
 
     @Test
     public void createUser_ShouldReturnCreatedUser() throws Exception {

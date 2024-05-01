@@ -3,11 +3,9 @@ package com.desiato.puresynth.controllers;
 import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.UserRepository;
-import com.desiato.puresynth.services.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
@@ -18,13 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTest extends BaseTest {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
 
     @Test
     public void createUser_ShouldReturnCreatedUser() throws Exception {
@@ -71,7 +63,6 @@ public class UserControllerTest extends BaseTest {
                 .andExpect(jsonPath("$.id").value(existingUser.getId()))
                 .andExpect(jsonPath("$.email").value(existingUser.getEmail()));
     }
-
 
     @Test
     public void updateUser_ShouldUpdateUserAndReturnUpdatedUser() throws Exception {

@@ -25,10 +25,17 @@ public class LoginControllerTest extends BaseTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginControllerTest.class);
 
 
+    @Test
+    public void manuallyCreateAndPersistUser() {
+        User user = new User();
+        user.setEmail("example@example.com");
+        user.setPassword(passwordEncoder.encode("password123"));
 
+        userRepository.save(user);
+    }
 
     @Test
     public void authenticateUser_WhenPasswordIsInvalid_ShouldReturnUnauthorized() throws Exception {
@@ -44,7 +51,7 @@ public class LoginControllerTest extends BaseTest {
                 }
                 """.formatted(uniqueEmail, invalidPassword);
 
-        mockMvc.perform(post("/api/login/")
+        mockMvc.perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isUnauthorized())
@@ -69,7 +76,7 @@ public class LoginControllerTest extends BaseTest {
 
         logger.info("Sending login request with email: {}", uniqueEmail);
 
-        MvcResult loginResult = mockMvc.perform(post("/api/login/")
+        MvcResult loginResult = mockMvc.perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson))
                 .andExpect(status().isOk())
@@ -103,7 +110,7 @@ public class LoginControllerTest extends BaseTest {
                 }
                 """.formatted(uniqueEmail, password);
 
-        MvcResult loginResult = mockMvc.perform(post("/api/login/")
+        MvcResult loginResult = mockMvc.perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson))
                 .andExpect(status().isOk())

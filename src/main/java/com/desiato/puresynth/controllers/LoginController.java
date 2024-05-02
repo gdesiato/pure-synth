@@ -27,7 +27,7 @@ public class LoginController {
                     .header("Auth-Token", token.get())
                     .build();
         } else {
-            return ResponseEntity.status(401).body("Authentication failed");
+            return ResponseEntity.status(401).body("Unauthorized");
         }
     }
 }

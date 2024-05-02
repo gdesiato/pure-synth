@@ -25,7 +25,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping
+    @GetMapping("/hello")
     public String helloApi(){
         return "hello api";
     }

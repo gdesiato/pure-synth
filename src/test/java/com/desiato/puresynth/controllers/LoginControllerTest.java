@@ -91,7 +91,7 @@ public class LoginControllerTest extends BaseTest {
 
         logger.info("Retrieved token: {}", token);
 
-        mockMvc.perform(get("/api/user/hello") // Replace with your protected resource path
+        mockMvc.perform(get("/api/user/hello")
                         .header("Auth-Token", token))
                 .andExpect(status().isOk());
     }

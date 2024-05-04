@@ -47,9 +47,17 @@ public class AuthenticationService {
         logger.info("Authentication succeeded for email: {}", email);
 
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiration = LocalDateTime.now().plusHours(4);  // Session expiration
 
-        sessionRepository.save(new Session(token, email, expiration));  // Store session
+        User user = optionalUser.get();
+
+        // Set login time
+        user.setLoginTime(System.currentTimeMillis());
+
+        // Create session
+        Session session = new Session(token, email, user, user.getLoginTime());
+
+        // Save session
+        sessionRepository.save(session);
 
         logger.info("Session created for email: {} with token: {}", email, token);
 
@@ -66,14 +74,24 @@ public class AuthenticationService {
 
         Session session = sessionOpt.get();
 
-        if (session.getExpiration() != null && session.getExpiration().isBefore(LocalDateTime.now())) {
-            logger.warn("Token authentication failed: Session expired for token {}", token);
+        User user = session.getUser();  // Retrieve user from session
+
+        if (user == null) {
+            logger.warn("Token authentication failed: No user found in session");
             return false;
         }
 
-        logger.info("Token authenticated successfully for email: {}", session.getEmail());
+        long userLoginTime = user.getLoginTime();
 
-        return true;
+        // Check if session login timestamp is within a reasonable window of user login time
+        long currentTime = System.currentTimeMillis();
+        long maxValidTimeDiff = 500;
+
+        if (Math.abs(currentTime - session.getLoginTimestamp()) <= maxValidTimeDiff) {
+            return true;
+        } else {
+            logger.warn("Token authentication failed: Login timestamp mismatch for session");
+            return false;
+        }
     }
-
 }

@@ -12,6 +12,7 @@ CREATE TABLE `user` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `login_time` BIGINT DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 );
 

@@ -27,9 +27,15 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (token == null || !authService.isUserAuthenticated(token)) {
+        if (token == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized");
+            return;
+        }
+
+        if (!authService.isUserAuthenticated(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Unauthorized: Invalid token");
             return;
         }
 

@@ -1,6 +1,7 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,15 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthenticationService authService;
+
     @GetMapping("/hello")
-    public String helloApi(){
-        return "hello api";
+    public ResponseEntity<String> helloApi(@RequestHeader(value = "Auth-Token") String token) {
+        if (!authService.isUserAuthenticated(token)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Invalid token");
+        }
+        return ResponseEntity.ok("Hello API!");
     }
 
     @GetMapping("/{id}")

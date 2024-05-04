@@ -1,9 +1,6 @@
 package com.desiato.puresynth.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -16,23 +13,28 @@ public class Session {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = true)
-    private LocalDateTime expiration;
+    @ManyToOne
+    @JoinColumn(name = "user_obj")
+    private User user;
 
-    public Session() {}
+    private long loginTimestamp;
 
-    public Session(String token, String email, LocalDateTime expiration) {
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Session() {
+    }
+
+    public Session(String token, String email, User user, long loginTimestamp) {
         this.token = token;
         this.email = email;
-        this.expiration = expiration;
-    }
-
-    public LocalDateTime getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(LocalDateTime expiration) {
-        this.expiration = expiration;
+        this.user = user;
+        this.loginTimestamp = loginTimestamp;
     }
 
     public String getToken() {
@@ -49,5 +51,13 @@ public class Session {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public long getLoginTimestamp() {
+        return loginTimestamp;
+    }
+
+    public void setLoginTimestamp(long loginTimestamp) {
+        this.loginTimestamp = loginTimestamp;
     }
 }

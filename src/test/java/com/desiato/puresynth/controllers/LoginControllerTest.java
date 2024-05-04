@@ -68,11 +68,11 @@ public class LoginControllerTest extends BaseTest {
         userService.createUser(uniqueEmail, passwordEncoder.encode(password));
 
         String loginJson = String.format("""
-            {
-                "email": "%s",
-                "password": "%s"
-            }
-            """, uniqueEmail, password);
+                {
+                    "email": "%s",
+                    "password": "%s"
+                }
+                """, uniqueEmail, password);
 
         logger.info("Sending login request with email: {}", uniqueEmail);
 

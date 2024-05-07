@@ -14,10 +14,9 @@ public class Session {
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "user_obj")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    private long loginTimestamp;
 
     public User getUser() {
         return user;
@@ -30,11 +29,10 @@ public class Session {
     public Session() {
     }
 
-    public Session(String token, String email, User user, long loginTimestamp) {
+    public Session(String token, String email, User user) {
         this.token = token;
         this.email = email;
         this.user = user;
-        this.loginTimestamp = loginTimestamp;
     }
 
     public String getToken() {
@@ -51,13 +49,5 @@ public class Session {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public long getLoginTimestamp() {
-        return loginTimestamp;
-    }
-
-    public void setLoginTimestamp(long loginTimestamp) {
-        this.loginTimestamp = loginTimestamp;
     }
 }

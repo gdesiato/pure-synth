@@ -20,8 +20,6 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    private long loginTime;
-
     public User() {}
 
     public User(String email, String password) {

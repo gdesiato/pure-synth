@@ -50,11 +50,8 @@ public class AuthenticationService {
 
         User user = optionalUser.get();
 
-        // Set login time
-        user.setLoginTime(System.currentTimeMillis());
-
         // Create session
-        Session session = new Session(token, email, user, user.getLoginTime());
+        Session session = new Session(token, email, user);
 
         // Save session
         sessionRepository.save(session);
@@ -73,25 +70,13 @@ public class AuthenticationService {
         }
 
         Session session = sessionOpt.get();
-
-        User user = session.getUser();  // Retrieve user from session
+        User user = session.getUser();
 
         if (user == null) {
             logger.warn("Token authentication failed: No user found in session");
             return false;
         }
 
-        long userLoginTime = user.getLoginTime();
-
-        // Check if session login timestamp is within a reasonable window of user login time
-        long currentTime = System.currentTimeMillis();
-        long maxValidTimeDiff = 500;
-
-        if (Math.abs(currentTime - session.getLoginTimestamp()) <= maxValidTimeDiff) {
-            return true;
-        } else {
-            logger.warn("Token authentication failed: Login timestamp mismatch for session");
-            return false;
-        }
+        return true;
     }
 }

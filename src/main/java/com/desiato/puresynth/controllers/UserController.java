@@ -20,21 +20,25 @@ import java.util.Optional;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationService authService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationService authService) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
+    }
 
-    @Autowired
-    private AuthenticationService authService;
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/hello")
-    public ResponseEntity<String> helloApi(@RequestHeader(value = "Auth-Token") String token) {
-        if (!authService.isUserAuthenticated(token)) {
+    public ResponseEntity<String> helloApi(@RequestHeader("Auth-Token") String token) {
+        if (authService.isUserAuthenticated(token)) {
+            return ResponseEntity.ok("Access to protected resource granted");
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Invalid token");
         }
-        return ResponseEntity.ok("Hello API!");
     }
 
     @GetMapping("/{id}")

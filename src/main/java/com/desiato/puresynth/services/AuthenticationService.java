@@ -39,24 +39,16 @@ public class AuthenticationService {
             return Optional.empty();
         }
 
-        if (!passwordEncoder.matches(password, optionalUser.get().getPassword())) {
+        User user = optionalUser.get();
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             logger.warn("Authentication failed: Incorrect password for email: {}", email);
             return Optional.empty();
         }
 
-        logger.info("Authentication succeeded for email: {}", email);
-
         String token = UUID.randomUUID().toString();
-
-        User user = optionalUser.get();
-
-        // Create session
         Session session = new Session(token, email, user);
-
-        // Save session
         sessionRepository.save(session);
-
-        logger.info("Session created for email: {} with token: {}", email, token);
+        logger.info("Authentication succeeded and session created for email: {}", email);
 
         return Optional.of(token);
     }

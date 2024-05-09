@@ -25,8 +25,11 @@ public class AudioController {
     @Value("${audio.files.directory}")
     private String audioFilesDir;
 
-    @Autowired
-    private AudioService audioService;
+    private final AudioService audioService;
+
+    public AudioController(AudioService audioService){
+        this.audioService = audioService;
+    }
 
     @PostMapping("/generate")
     public ResponseEntity<?> generateAudio(@RequestBody AudioRequest request) {

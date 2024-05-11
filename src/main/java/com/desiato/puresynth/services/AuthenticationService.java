@@ -1,13 +1,16 @@
 package com.desiato.puresynth.services;
 
+import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -71,4 +74,18 @@ public class AuthenticationService {
 
         return true;
     }
+
+    public UserDetails loadUserByToken(String token) {
+        Optional<Session> sessionOpt = sessionRepository.findById(token);
+        if (sessionOpt.isPresent()) {
+            Session session = sessionOpt.get();
+            User user = session.getUser();
+            if (user != null) {
+                return new CustomUserDetails(user);
+            }
+        }
+        return null;
+    }
+
+
 }

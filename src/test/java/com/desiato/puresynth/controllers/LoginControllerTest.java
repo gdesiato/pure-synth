@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@SpringBootTest
+@AutoConfigureMockMvc
 public class LoginControllerTest extends BaseTest {
 
+    // use contructor injection
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -103,7 +108,7 @@ public class LoginControllerTest extends BaseTest {
         String token = JsonPath.parse(loginResult.getResponse().getContentAsString()).read("$.Auth-Token", String.class);
 
         // Step 2: Access a protected endpoint using the valid token
-        mockMvc.perform(get("/api/hello")
+        mockMvc.perform(get("/api/user/hello")
                         .header("Auth-Token", token))
                 .andExpect(status().isOk());
     }

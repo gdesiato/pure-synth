@@ -72,12 +72,12 @@ public class LoginControllerTest extends BaseTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.Auth-Token").exists()) // Validate token presence in response
+                .andExpect(jsonPath("$.authToken").exists())
                 .andReturn();
 
         logger.info("Login response status code: {}", loginResult.getResponse().getStatus());
 
-        String token = JsonPath.parse(loginResult.getResponse().getContentAsString()).read("$.Auth-Token", String.class);
+        String token = JsonPath.parse(loginResult.getResponse().getContentAsString()).read("$.authToken", String.class);
         assertNotNull(token, "Authentication token is missing or invalid");
         logger.info("Retrieved token: {}", token);
     }
@@ -100,14 +100,14 @@ public class LoginControllerTest extends BaseTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.Auth-Token").exists())
+                .andExpect(jsonPath("$.authToken").exists())
                 .andReturn();
 
-        String token = JsonPath.parse(loginResult.getResponse().getContentAsString()).read("$.Auth-Token", String.class);
+        String token = JsonPath.parse(loginResult.getResponse().getContentAsString()).read("$.authToken", String.class);
 
         // Step 2: Access a protected endpoint using the valid token
         mockMvc.perform(get("/api/user/me")
-                        .header("Auth-Token", token))
+                        .header("authToken", token))
                 .andExpect(status().isOk());
     }
 
@@ -120,7 +120,7 @@ public class LoginControllerTest extends BaseTest {
     @Test
     public void accessProtectedEndpoint_WithInvalidToken_ShouldDenyAccess() throws Exception {
         mockMvc.perform(get("/api/user/me")
-                        .header("Auth-Token", "invalid_token"))
+                        .header("authToken", "invalid_token"))
                 .andExpect(status().isUnauthorized());  // Invalid token, so access is denied
     }
 

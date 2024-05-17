@@ -28,7 +28,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String token = request.getHeader("Auth-Token");
+        String token = request.getHeader("authToken");
 
         if (isPublicEndpoint(request.getRequestURI())) {
             filterChain.doFilter(request, response);

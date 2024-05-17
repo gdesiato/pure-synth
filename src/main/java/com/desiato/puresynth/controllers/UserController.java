@@ -33,7 +33,7 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/me")
-    public ResponseEntity<String> helloApi(@RequestHeader("Auth-Token") String token) {
+    public ResponseEntity<String> helloApi(@RequestHeader("authToken") String token) {
         if (authService.isUserAuthenticated(token)) {
             return ResponseEntity.ok("Access to protected resource granted");
         } else {

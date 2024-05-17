@@ -49,13 +49,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    @Transactional
-    public void deleteUserSessions(Long userId) {
-        logger.info("Deleting sessions for user ID: {}", userId);
-        sessionRepository.deleteByUserId(userId);
-        logger.info("Deleted sessions for user ID: {}", userId);
-    }
-
     public User createUser(String email, String password) {
         User newUser = new User(email, password);
         userRepository.save(newUser);

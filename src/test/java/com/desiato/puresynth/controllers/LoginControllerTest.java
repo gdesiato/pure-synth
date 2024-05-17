@@ -23,11 +23,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+
 public class LoginControllerTest extends BaseTest {
 
-    // use contructor injection
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -108,20 +106,20 @@ public class LoginControllerTest extends BaseTest {
         String token = JsonPath.parse(loginResult.getResponse().getContentAsString()).read("$.Auth-Token", String.class);
 
         // Step 2: Access a protected endpoint using the valid token
-        mockMvc.perform(get("/api/user/hello")
+        mockMvc.perform(get("/api/user/me")
                         .header("Auth-Token", token))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void accessProtectedEndpoint_WithoutToken_ShouldDenyAccess() throws Exception {
-        mockMvc.perform(get("/api/protected"))
+        mockMvc.perform(get("/api/user/me"))
                 .andExpect(status().isUnauthorized());  // No token, so access is denied
     }
 
     @Test
     public void accessProtectedEndpoint_WithInvalidToken_ShouldDenyAccess() throws Exception {
-        mockMvc.perform(get("/api/protected")
+        mockMvc.perform(get("/api/user/me")
                         .header("Auth-Token", "invalid_token"))
                 .andExpect(status().isUnauthorized());  // Invalid token, so access is denied
     }

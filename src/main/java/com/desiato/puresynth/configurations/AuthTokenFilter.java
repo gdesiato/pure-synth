@@ -1,5 +1,8 @@
 package com.desiato.puresynth.configurations;
 
+import com.desiato.puresynth.exceptions.InvalidTokenException;
+import com.desiato.puresynth.models.CustomUserDetails;
+import com.desiato.puresynth.models.UserDTO;
 import com.desiato.puresynth.services.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,19 +17,20 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Optional;
 
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    private AuthenticationService authService;
+    private AuthenticationService authenticationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String token = request.getHeader("Auth-Token");
 
-        if (request.getRequestURI().equals("/api/login") || request.getRequestURI().equals("/api/user")) {
+        if (isPublicEndpoint(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -38,28 +42,25 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
 
         try {
-            if (!authService.isUserAuthenticated(token)) {
+            Optional<UserDetails> userDetailsOptional = authenticationService.authenticateByToken(token);
+            if (userDetailsOptional.isPresent()) {
+                UserDetails userDetails = userDetailsOptional.get();
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                filterChain.doFilter(request, response);
+            } else {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Unauthorized: Invalid token");
-                return;
             }
-
-            UserDetails userDetails = authService.loadUserByToken(token);
-            if (userDetails == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Unauthorized: Invalid token");
-                return;
-            }
-
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, Collections.emptyList());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("Internal Server Error: " + e.getMessage());
+            response.getWriter().write("Internal Server Error");
         }
     }
 
+    private boolean isPublicEndpoint(String requestURI) {
+        return "/api/login".equals(requestURI) || "/api/user".equals(requestURI);
+    }
 }

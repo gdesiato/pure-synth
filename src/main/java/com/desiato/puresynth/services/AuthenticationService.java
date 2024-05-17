@@ -1,10 +1,12 @@
 package com.desiato.puresynth.services;
 
+import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -82,9 +84,26 @@ public class AuthenticationService {
             User user = session.getUser();
             if (user != null) {
                 return new CustomUserDetails(user);
+            } else {
+                throw new InvalidTokenException("Invalid token: associated user is null");
             }
+        } else {
+            throw new InvalidTokenException("Invalid token: token not found");
         }
-        return null;
+    }
+
+    public Optional<UserDetails> authenticateByToken(String token) {
+        if (isUserAuthenticated(token)) {
+            return Optional.ofNullable(loadUserByToken(token));
+        }
+        return Optional.empty();
+    }
+
+    @Transactional
+    public void deleteUserSessions(Long userId) {
+        logger.info("Deleting sessions for user ID: {}", userId);
+        sessionRepository.deleteByUserId(userId);
+        logger.info("Deleted sessions for user ID: {}", userId);
     }
 
 

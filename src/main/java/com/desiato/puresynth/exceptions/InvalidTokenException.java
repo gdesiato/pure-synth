@@ -1,6 +1,6 @@
 package com.desiato.puresynth.exceptions;
 
-public class InvalidTokenException extends RuntimeException {
+public class InvalidTokenException extends Exception {
     public InvalidTokenException(String message) {
         super(message);
     }

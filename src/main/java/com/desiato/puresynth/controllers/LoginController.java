@@ -32,7 +32,7 @@ public class LoginController {
     private AuthenticationService authService;
 
     @PostMapping
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<Object> authenticateUser(@RequestBody LoginRequestDTO loginRequestDTO) {
         Optional<String> token = authService.authenticate(loginRequestDTO.email(), loginRequestDTO.password());
 
         if (token.isPresent()) {

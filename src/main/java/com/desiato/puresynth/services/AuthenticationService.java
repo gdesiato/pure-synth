@@ -77,7 +77,7 @@ public class AuthenticationService {
         return true;
     }
 
-    public UserDetails loadUserByToken(String token) {
+    public UserDetails loadUserByToken(String token) throws InvalidTokenException {
         Optional<Session> sessionOpt = sessionRepository.findById(token);
         if (sessionOpt.isPresent()) {
             Session session = sessionOpt.get();
@@ -92,11 +92,14 @@ public class AuthenticationService {
         }
     }
 
-    public Optional<UserDetails> authenticateByToken(String token) {
-        if (isUserAuthenticated(token)) {
-            return Optional.ofNullable(loadUserByToken(token));
+    public Optional<UserDetails> authenticateByToken(String token) throws InvalidTokenException {
+        if (token == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        if (!isUserAuthenticated(token)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(loadUserByToken(token));
     }
 
     @Transactional

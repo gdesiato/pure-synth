@@ -1,20 +1,18 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.exceptions.InvalidTokenException;
+import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.models.UserDTO;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -22,22 +20,28 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationService authService;
+    private final AuthenticationService authenticationService;
 
     public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationService authService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.authService = authService;
+        this.authenticationService = authService;
     }
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/me")
-    public ResponseEntity<String> helloApi(@RequestHeader("authToken") String token) {
-        if (authService.isUserAuthenticated(token)) {
-            return ResponseEntity.ok("Access to protected resource granted");
+    public ResponseEntity<?> getProtectedEndpoint(@RequestHeader("authToken") String token) throws InvalidTokenException {
+        UserDetails userDetails = authenticationService.loadUserByToken(token);
+        if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid or missing token");
+        } else if (!(userDetails instanceof CustomUserDetails)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: User details mismatch");
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: Invalid token");
+            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+            UserDTO userDto = new UserDTO();
+            userDto.setEmail(customUserDetails.getEmail());
+            return ResponseEntity.ok(userDto);
         }
     }
 

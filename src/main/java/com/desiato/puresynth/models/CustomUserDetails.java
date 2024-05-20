@@ -20,6 +20,10 @@ public class CustomUserDetails implements UserDetails {
         return Collections.emptyList();
     }
 
+    public String getEmail() {
+        return user.getEmail();
+    }
+
     @Override
     public String getPassword() {
         return user.getPassword();

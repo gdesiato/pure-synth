@@ -37,7 +37,7 @@ public class UserControllerTest extends BaseTest {
         String token = authenticatedUser.getAuthToken();
 
         mockMvc.perform(get("/api/user/" + existingUser.getId())
-                        .header("Auth-Token", token))
+                        .header("authToken", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(existingUser.getId()))
                 .andExpect(jsonPath("$.email").value(existingUser.getEmail()));
@@ -60,14 +60,14 @@ public class UserControllerTest extends BaseTest {
     """, newEmail);
 
         mockMvc.perform(put("/api/user/" + userId)
-                        .header("Auth-Token", token)
+                        .header("authToken", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(newEmail));
 
         mockMvc.perform(get("/api/user/" + userId)
-                        .header("Auth-Token", token))
+                        .header("authToken", token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(newEmail))
                 .andReturn();

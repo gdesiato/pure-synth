@@ -114,14 +114,14 @@ public class LoginControllerTest extends BaseTest {
     @Test
     public void accessProtectedEndpoint_WithoutToken_ShouldDenyAccess() throws Exception {
         mockMvc.perform(get("/api/user/me"))
-                .andExpect(status().isUnauthorized());  // No token, so access is denied
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     public void accessProtectedEndpoint_WithInvalidToken_ShouldDenyAccess() throws Exception {
         mockMvc.perform(get("/api/user/me")
                         .header("authToken", "invalid_token"))
-                .andExpect(status().isUnauthorized());  // Invalid token, so access is denied
+                .andExpect(status().isUnauthorized());
     }
 
     private String generateUniqueEmail() {

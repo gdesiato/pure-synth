@@ -1,5 +1,6 @@
 package com.desiato.puresynth.models;
 
+import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.repositories.UserRepository;
 import com.desiato.puresynth.services.UserService;
 import org.junit.jupiter.api.Test;
@@ -15,19 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class UserControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
-
+public class UserControllerTest extends BaseTest {
 
     @Test
     public void createUser_ShouldReturnCreatedUser() throws Exception {

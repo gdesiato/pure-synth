@@ -18,18 +18,10 @@ public class BaseTest {
     @Autowired
     public UserService userService;
 
-//    @Autowired
-//    public SessionRepository sessionRepository;
-
     @Autowired
     public UserRepository userRepository;
 
     @Autowired
     public PasswordEncoder passwordEncoder;
 
-//    @Autowired
-//    public AuthenticationService authService;
-//
-//    @Autowired
-//    public AuthTokenFilter authTokenFilter;
 }

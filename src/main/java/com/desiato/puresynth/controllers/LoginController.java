@@ -30,12 +30,10 @@ public class LoginController {
     public ResponseEntity<ApiResponse> authenticateUser(@RequestBody LoginRequestDTO loginRequestDTO) {
         Optional<String> token = authenticationService.authenticate(loginRequestDTO.email(), loginRequestDTO.password());
 
-        if (token.isPresent()) {
-            ApiResponse response = new ApiResponse("Success", token.get(), true);
-            return ResponseEntity.ok(response);
-        } else {
-            ApiResponse response = new ApiResponse("Unauthorized", null, false);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-        }
+        return token.map(tokenValue ->
+                        ResponseEntity.ok(new ApiResponse("Success", tokenValue, true)))
+                .orElseGet(() ->
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ApiResponse("Unauthorized", null, false)));
     }
 }

@@ -39,8 +39,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: User details mismatch");
         } else {
             CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-            UserDTO userDto = new UserDTO();
-            userDto.setEmail(customUserDetails.getEmail());
+            User user = customUserDetails.getUser();
+            UserDTO userDto = new UserDTO(user.getId(), user.getEmail());
             return ResponseEntity.ok(userDto);
         }
     }

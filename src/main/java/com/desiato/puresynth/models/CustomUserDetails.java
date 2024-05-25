@@ -20,6 +20,10 @@ public class CustomUserDetails implements UserDetails {
         return Collections.emptyList();
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public String getEmail() {
         return user.getEmail();
     }

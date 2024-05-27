@@ -1,5 +1,6 @@
 package com.desiato.puresynth.configurations;
 
+import com.desiato.puresynth.dtos.Token;
 import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.services.AuthenticationService;
 import jakarta.servlet.FilterChain;
@@ -32,21 +33,23 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String token = request.getHeader("authToken");
+        String tokenValue = request.getHeader("authToken");
 
         if (isPublicEndpoint(request.getRequestURI())) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        if (token == null) {
+        if (tokenValue == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized");
             return;
         }
 
         try {
+            Token token = new Token(tokenValue);
             Optional<UserDetails> userDetailsOptional = authenticationService.authenticateByToken(token);
+
             if (userDetailsOptional.isPresent()) {
                 UserDetails userDetails = userDetailsOptional.get();
                 UsernamePasswordAuthenticationToken authentication =

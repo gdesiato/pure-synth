@@ -1,16 +1,15 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.dtos.UserResponseDTO;
 import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.models.UserDTO;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,17 +30,15 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/me")
-    public ResponseEntity<?> getProtectedEndpoint(@RequestHeader("authToken") String token) throws InvalidTokenException {
-        UserDetails userDetails = authenticationService.loadUserByToken(token);
-        if (userDetails == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid or missing token");
-        } else if (!(userDetails instanceof CustomUserDetails)) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error: User details mismatch");
-        } else {
-            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+    public ResponseEntity<?> getUserDetailsByToken(@RequestHeader("authToken") String token) {
+        try {
+            CustomUserDetails customUserDetails = authenticationService.loadUserByToken(token);
             User user = customUserDetails.getUser();
-            UserDTO userDto = new UserDTO(user.getId(), user.getEmail());
+            UserResponseDTO userDto = new UserResponseDTO(user.getId(), user.getEmail());
             return ResponseEntity.ok(userDto);
+        } catch (InvalidTokenException e) {
+            logger.error("Authentication error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid or missing token");
         }
     }
 

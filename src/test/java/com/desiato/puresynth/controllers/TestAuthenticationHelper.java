@@ -1,5 +1,7 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.dtos.AuthenticationRequestDTO;
+import com.desiato.puresynth.dtos.Token;
 import com.desiato.puresynth.models.AuthenticatedUser;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.AuthenticationService;
@@ -28,8 +30,10 @@ public class TestAuthenticationHelper {
 
         User existingUser = userService.createUser(email, encodedPassword);
 
-        Optional<String> optionalToken = authenticationService.authenticate(email, password);
-        String token = optionalToken.orElseThrow(() -> new RuntimeException("Authentication failed, no token obtained"));
+        AuthenticationRequestDTO request = new AuthenticationRequestDTO(email, password);
+
+        Optional<Token> optionalToken = authenticationService.authenticate(request);
+        Token token = optionalToken.orElseThrow(() -> new RuntimeException("Authentication failed, no token obtained"));
 
         return new AuthenticatedUser(existingUser, token);
     }

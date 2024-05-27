@@ -1,5 +1,7 @@
 package com.desiato.puresynth.services;
 
+import com.desiato.puresynth.dtos.AuthenticationRequestDTO;
+import com.desiato.puresynth.dtos.Token;
 import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.Session;
@@ -12,13 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalDateTime;
-
 
 @Service
 public class AuthenticationService {
@@ -34,32 +33,29 @@ public class AuthenticationService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
-    public Optional<String> authenticate(String email, String password) {
-        logger.info("Attempting to authenticate user with email: {}", email);
+    public Optional<Token> authenticate(AuthenticationRequestDTO request) {
+        logger.info("Attempting to authenticate user with email: {}", request.email());
 
-        Optional<User> optionalUser = Optional.ofNullable(userRepository.findByEmail(email));
-
-        if (optionalUser.isEmpty()) {
-            logger.warn("Authentication failed: No user found for email: {}", email);
+        User user = userRepository.findByEmail(request.email());
+        if (user == null) {
+            logger.warn("Authentication failed: No user found for email: {}", request.email());
             return Optional.empty();
         }
 
-        User user = optionalUser.get();
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            logger.warn("Authentication failed: Incorrect password for email: {}", email);
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            logger.warn("Authentication failed: Incorrect password for email: {}", request.email());
             return Optional.empty();
         }
 
-        String token = UUID.randomUUID().toString();
-        Session session = new Session(token, email, user);
-        sessionRepository.save(session);
-        logger.info("Authentication succeeded and session created for email: {}", email);
+        String tokenValue = UUID.randomUUID().toString();
+        sessionRepository.save(new Session(tokenValue, user.getEmail(), user));
+        logger.info("Authentication succeeded and session created for email: {}", request.email());
 
-        return Optional.of(token);
+        return Optional.of(new Token(tokenValue));
     }
 
-    public boolean isUserAuthenticated(String token) {
-        Optional<Session> sessionOpt = sessionRepository.findById(token);
+    public boolean isUserAuthenticated(Token token) {
+        Optional<Session> sessionOpt = sessionRepository.findById(token.value());
 
         if (sessionOpt.isEmpty()) {
             logger.warn("Token authentication failed: Session not found for token {}", token);
@@ -77,13 +73,13 @@ public class AuthenticationService {
         return true;
     }
 
-    public UserDetails loadUserByToken(String token) throws InvalidTokenException {
+    public CustomUserDetails loadUserByToken(String token) throws InvalidTokenException {
         Optional<Session> sessionOpt = sessionRepository.findById(token);
         if (sessionOpt.isPresent()) {
             Session session = sessionOpt.get();
             User user = session.getUser();
             if (user != null) {
-                return new CustomUserDetails(user);
+                return new CustomUserDetails(user); // Directly return CustomUserDetails
             } else {
                 throw new InvalidTokenException("Invalid token: associated user is null");
             }
@@ -92,14 +88,16 @@ public class AuthenticationService {
         }
     }
 
-    public Optional<UserDetails> authenticateByToken(String token) throws InvalidTokenException {
-        if (token == null) {
-            return Optional.empty();
+    public Optional<UserDetails> authenticateByToken(Token token) throws InvalidTokenException {
+        if (token == null || token.value() == null) {
+            throw new InvalidTokenException("Token is null.");
         }
         if (!isUserAuthenticated(token)) {
-            return Optional.empty();
+            throw new InvalidTokenException("Token is not valid or has expired.");
         }
-        return Optional.ofNullable(loadUserByToken(token));
+
+        UserDetails userDetails = loadUserByToken(token.value());
+        return Optional.ofNullable(userDetails);
     }
 
     @Transactional

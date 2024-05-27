@@ -1,7 +1,9 @@
 package com.desiato.puresynth.controllers;
 
-import com.desiato.puresynth.models.ApiResponse;
-import com.desiato.puresynth.models.LoginRequestDTO;
+import com.desiato.puresynth.dtos.AuthenticationRequestDTO;
+import com.desiato.puresynth.dtos.LoginResponseDTO;
+import com.desiato.puresynth.dtos.LoginRequestDTO;
+import com.desiato.puresynth.dtos.Token;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -27,13 +29,13 @@ public class LoginController {
 
 
     @PostMapping
-    public ResponseEntity<ApiResponse> authenticateUser(@RequestBody LoginRequestDTO loginRequestDTO) {
-        Optional<String> token = authenticationService.authenticate(loginRequestDTO.email(), loginRequestDTO.password());
+    public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) {
+        Optional<Token> optionalToken = authenticationService.authenticate(requestDTO);
 
-        return token.map(tokenValue ->
-                        ResponseEntity.ok(new ApiResponse("Success", tokenValue, true)))
+        return optionalToken.map(token ->
+                        ResponseEntity.ok(new LoginResponseDTO("Success", token.value(), true)))
                 .orElseGet(() ->
                         ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ApiResponse("Unauthorized", null, false)));
+                                .body(new LoginResponseDTO("Unauthorized", null, false)));
     }
 }

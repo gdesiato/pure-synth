@@ -1,11 +1,15 @@
 package com.desiato.puresynth.models;
 
+import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
 
+
+@Data
 public class CustomUserDetails implements UserDetails {
 
     private final User user;
@@ -18,10 +22,6 @@ public class CustomUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // User class doesn't currently handle roles or authorities, return an empty list
         return Collections.emptyList();
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public String getEmail() {

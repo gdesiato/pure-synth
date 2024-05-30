@@ -1,7 +1,8 @@
 package com.desiato.puresynth.configurations;
 
-import com.desiato.puresynth.dtos.Token;
+import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.exceptions.InvalidTokenException;
+import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.services.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,8 +48,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
 
         try {
-            Token token = new Token(tokenValue);
-            Optional<UserDetails> userDetailsOptional = authenticationService.authenticateByToken(token);
+            PureSynthToken pureSynthToken = new PureSynthToken(tokenValue);
+            Optional<CustomUserDetails> userDetailsOptional = authenticationService.authenticateByToken(pureSynthToken);
 
             if (userDetailsOptional.isPresent()) {
                 UserDetails userDetails = userDetailsOptional.get();
@@ -56,14 +57,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
-            } else {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("Unauthorized: Invalid token");
             }
         } catch (AuthenticationException | InvalidTokenException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized: " + e.getMessage());
-            log.error("Authentication error: ", e);
+            response.getWriter().write("Unauthorized: Invalid token");
         }
     }
 

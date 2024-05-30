@@ -1,27 +1,29 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.dtos.AuthenticationRequestDTO;
-import com.desiato.puresynth.dtos.Token;
+import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.models.AuthenticatedUser;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class TestAuthenticationHelper {
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private AuthenticationService authenticationService;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public TestAuthenticationHelper(UserService userService, AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.authenticationService = authenticationService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public AuthenticatedUser createAndAuthenticateUser() throws Exception {
         String email = generateUniqueEmail();
@@ -32,10 +34,10 @@ public class TestAuthenticationHelper {
 
         AuthenticationRequestDTO request = new AuthenticationRequestDTO(email, password);
 
-        Optional<Token> optionalToken = authenticationService.authenticate(request);
-        Token token = optionalToken.orElseThrow(() -> new RuntimeException("Authentication failed, no token obtained"));
+        Optional<PureSynthToken> optionalToken = authenticationService.authenticate(request);
+        PureSynthToken pureSynthToken = optionalToken.orElseThrow(() -> new RuntimeException("Authentication failed, no token obtained"));
 
-        return new AuthenticatedUser(existingUser, token);
+        return new AuthenticatedUser(existingUser, pureSynthToken);
     }
 
     private String generateUniqueEmail() {

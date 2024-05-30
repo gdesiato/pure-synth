@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -31,14 +33,15 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getUserDetailsByToken(@RequestHeader("authToken") String token) {
-        try {
-            CustomUserDetails customUserDetails = authenticationService.loadUserByToken(token);
+        Optional<CustomUserDetails> customUserDetailsOpt = authenticationService.loadUserByToken(token);
+
+        if (customUserDetailsOpt.isPresent()) {
+            CustomUserDetails customUserDetails = customUserDetailsOpt.get();
             User user = customUserDetails.getUser();
             UserResponseDTO userDto = new UserResponseDTO(user.getId(), user.getEmail());
             return ResponseEntity.ok(userDto);
-        } catch (InvalidTokenException e) {
-            logger.error("Authentication error: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid or missing token");
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token.");
         }
     }
 

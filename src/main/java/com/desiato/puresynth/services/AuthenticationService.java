@@ -1,7 +1,7 @@
 package com.desiato.puresynth.services;
 
 import com.desiato.puresynth.dtos.AuthenticationRequestDTO;
-import com.desiato.puresynth.dtos.Token;
+import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.Session;
@@ -33,7 +33,7 @@ public class AuthenticationService {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
-    public Optional<Token> authenticate(AuthenticationRequestDTO request) {
+    public Optional<PureSynthToken> authenticate(AuthenticationRequestDTO request) {
         logger.info("Attempting to authenticate user with email: {}", request.email());
 
         User user = userRepository.findByEmail(request.email());
@@ -48,22 +48,23 @@ public class AuthenticationService {
         }
 
         String tokenValue = UUID.randomUUID().toString();
-        sessionRepository.save(new Session(tokenValue, user.getEmail(), user));
-        logger.info("Authentication succeeded and session created for email: {}", request.email());
+        Session newSession = new Session(tokenValue, user.getId());
+        sessionRepository.save(newSession);        logger.info("Authentication succeeded and session created for email: {}", request.email());
 
-        return Optional.of(new Token(tokenValue));
+        return Optional.of(new PureSynthToken(tokenValue));
     }
 
-    public boolean isUserAuthenticated(Token token) {
-        Optional<Session> sessionOpt = sessionRepository.findById(token.value());
+    public boolean isUserAuthenticated(PureSynthToken pureSynthToken) {
+        Optional<Session> sessionOpt = sessionRepository.findById(pureSynthToken.value());
 
         if (sessionOpt.isEmpty()) {
-            logger.warn("Token authentication failed: Session not found for token {}", token);
+            logger.warn("Token authentication failed: Session not found for token {}", pureSynthToken);
             return false;
         }
 
         Session session = sessionOpt.get();
-        User user = session.getUser();
+        Long userId = session.getUserId();
+        Optional<User> user = userRepository.findById(userId);
 
         if (user == null) {
             logger.warn("Token authentication failed: No user found in session");
@@ -73,31 +74,23 @@ public class AuthenticationService {
         return true;
     }
 
-    public CustomUserDetails loadUserByToken(String token) throws InvalidTokenException {
-        Optional<Session> sessionOpt = sessionRepository.findById(token);
-        if (sessionOpt.isPresent()) {
-            Session session = sessionOpt.get();
-            User user = session.getUser();
-            if (user != null) {
-                return new CustomUserDetails(user); // Directly return CustomUserDetails
-            } else {
-                throw new InvalidTokenException("Invalid token: associated user is null");
-            }
-        } else {
-            throw new InvalidTokenException("Invalid token: token not found");
-        }
+    public Optional<CustomUserDetails> loadUserByToken(String token) {
+        return sessionRepository.findById(token)
+                .map(Session::getUserId)
+                .flatMap(userRepository::findById)
+                .map(CustomUserDetails::new);
     }
 
-    public Optional<UserDetails> authenticateByToken(Token token) throws InvalidTokenException {
-        if (token == null || token.value() == null) {
+    public Optional<CustomUserDetails> authenticateByToken(PureSynthToken pureSynthToken) throws InvalidTokenException {
+        if (pureSynthToken == null || pureSynthToken.value() == null) {
             throw new InvalidTokenException("Token is null.");
         }
-        if (!isUserAuthenticated(token)) {
+        if (!isUserAuthenticated(pureSynthToken)) {
             throw new InvalidTokenException("Token is not valid or has expired.");
         }
 
-        UserDetails userDetails = loadUserByToken(token.value());
-        return Optional.ofNullable(userDetails);
+        Optional<CustomUserDetails> customUserDetails = loadUserByToken(pureSynthToken.value());
+        return customUserDetails;
     }
 
     @Transactional

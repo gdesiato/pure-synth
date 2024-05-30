@@ -1,3 +1,7 @@
 package com.desiato.puresynth.dtos;
 
-public record LoginResponseDTO(String message, String token, boolean success) {}
+public interface LoginResponseDTO {
+    String getMessage();
+    String getToken();
+    boolean isSuccess();
+}

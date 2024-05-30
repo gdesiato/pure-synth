@@ -1,53 +1,25 @@
 package com.desiato.puresynth.models;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Table(name = "user_session")
 public class Session {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
     private String token;
 
     @Column(nullable = false)
-    private String email;
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Session() {
-    }
-
-    public Session(String token, String email, User user) {
-        this.token = token;
-        this.email = email;
-        this.user = user;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public Session(String tokenValue, Long id) {
     }
 }

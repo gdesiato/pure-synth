@@ -1,7 +1,7 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.dtos.*;
-import com.desiato.puresynth.exceptions.CustomAuthenticationException;
+import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/login")
 public class LoginController {
 
-    private UserService userService;
-    private AuthenticationService authenticationService;
+    private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     public LoginController(UserService userService, AuthenticationService authenticationService) {
         this.userService = userService;
@@ -23,9 +23,9 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) {
+    public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) throws InvalidTokenException {
         PureSynthToken pureSynthToken = authenticationService.authenticate(requestDTO)
-                .orElseThrow(() -> new CustomAuthenticationException("Unauthorized: Invalid credentials"));
-        return ResponseEntity.ok(new SuccessLoginResponseDTO(pureSynthToken.value()));
+                .orElseThrow(() -> new InvalidTokenException("Unauthorized: Invalid credentials"));
+        return ResponseEntity.ok(new SuccessLoginResponseDTO(pureSynthToken.value(), true));
     }
 }

@@ -1,7 +1,5 @@
 package com.desiato.puresynth.models;
 
-import lombok.Data;
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -9,14 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 
-@Data
-public class CustomUserDetails implements UserDetails {
-
-    private final User user;
-
-    public CustomUserDetails(User user) {
-        this.user = user;
-    }
+public record CustomUserDetails(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

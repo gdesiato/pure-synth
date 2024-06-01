@@ -15,9 +15,9 @@ import java.util.UUID;
 
 @Service
 public class TestAuthenticationHelper {
-    private UserService userService;
-    private AuthenticationService authenticationService;
-    private PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final AuthenticationService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
     public TestAuthenticationHelper(UserService userService, AuthenticationService authenticationService, PasswordEncoder passwordEncoder) {
         this.userService = userService;

@@ -23,7 +23,7 @@ import java.util.Optional;
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     public AuthTokenFilter(AuthenticationService authenticationService){
         this.authenticationService = authenticationService;
@@ -49,7 +49,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         try {
             PureSynthToken pureSynthToken = new PureSynthToken(tokenValue);
-            Optional<CustomUserDetails> userDetailsOptional = authenticationService.authenticateByToken(pureSynthToken);
+            Optional<CustomUserDetails> userDetailsOptional = authenticationService.loadUserByToken(tokenValue);
 
             if (userDetailsOptional.isPresent()) {
                 UserDetails userDetails = userDetailsOptional.get();
@@ -58,7 +58,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(request, response);
             }
-        } catch (AuthenticationException | InvalidTokenException e) {
+        } catch (AuthenticationException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Invalid token");
         }

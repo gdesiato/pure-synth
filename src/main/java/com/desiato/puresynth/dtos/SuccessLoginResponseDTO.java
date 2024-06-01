@@ -1,12 +1,6 @@
 package com.desiato.puresynth.dtos;
 
-public class SuccessLoginResponseDTO implements LoginResponseDTO {
-    private final String token;
-    private final boolean success = true;
-
-    public SuccessLoginResponseDTO(String token) {
-        this.token = token;
-    }
+public record SuccessLoginResponseDTO(String token, boolean success) implements LoginResponseDTO {
 
     @Override
     public String getMessage() {
@@ -15,11 +9,11 @@ public class SuccessLoginResponseDTO implements LoginResponseDTO {
 
     @Override
     public boolean isSuccess() {
-        return success;
+        return true;
     }
 
     @Override
     public String getToken() {
-        return token;
+        return getToken();
     }
 }

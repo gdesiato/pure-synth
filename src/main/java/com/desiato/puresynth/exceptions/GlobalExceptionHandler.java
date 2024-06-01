@@ -4,15 +4,16 @@ import com.desiato.puresynth.dtos.ErrorLoginResponseDTO;
 import com.desiato.puresynth.dtos.LoginResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomAuthenticationException.class)
-    public ResponseEntity<LoginResponseDTO> handleAuthenticationException(CustomAuthenticationException e) {
-        ErrorLoginResponseDTO response = new ErrorLoginResponseDTO(e.getMessage());
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<LoginResponseDTO> handleAuthenticationException(AuthenticationException e) {
+        ErrorLoginResponseDTO response = new ErrorLoginResponseDTO(e.getMessage(), false);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 

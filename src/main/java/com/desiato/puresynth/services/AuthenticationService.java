@@ -49,7 +49,8 @@ public class AuthenticationService {
 
         String tokenValue = UUID.randomUUID().toString();
         Session newSession = new Session(tokenValue, user.getId());
-        sessionRepository.save(newSession);        logger.info("Authentication succeeded and session created for email: {}", request.email());
+        sessionRepository.save(newSession);
+        logger.info("Authentication succeeded and session created for email: {}", request.email());
 
         return Optional.of(new PureSynthToken(tokenValue));
     }
@@ -58,7 +59,7 @@ public class AuthenticationService {
         Optional<Session> sessionOpt = sessionRepository.findById(pureSynthToken.value());
 
         if (sessionOpt.isEmpty()) {
-            logger.warn("Token authentication failed: Session not found for token {}", pureSynthToken);
+            logger.warn("Token authentication failed: Session not found for token {}");
             return false;
         }
 
@@ -79,18 +80,6 @@ public class AuthenticationService {
                 .map(Session::getUserId)
                 .flatMap(userRepository::findById)
                 .map(CustomUserDetails::new);
-    }
-
-    public Optional<CustomUserDetails> authenticateByToken(PureSynthToken pureSynthToken) throws InvalidTokenException {
-        if (pureSynthToken == null || pureSynthToken.value() == null) {
-            throw new InvalidTokenException("Token is null.");
-        }
-        if (!isUserAuthenticated(pureSynthToken)) {
-            throw new InvalidTokenException("Token is not valid or has expired.");
-        }
-
-        Optional<CustomUserDetails> customUserDetails = loadUserByToken(pureSynthToken.value());
-        return customUserDetails;
     }
 
     @Transactional

@@ -1,25 +1,18 @@
 package com.desiato.puresynth.dtos;
 
-public class ErrorLoginResponseDTO implements LoginResponseDTO {
-    private final String message;
-    private final boolean success = false;
-
-    public ErrorLoginResponseDTO(String message) {
-        this.message = message;
-    }
-
+public record ErrorLoginResponseDTO(String message, boolean success) implements LoginResponseDTO {
     @Override
     public String getMessage() {
         return message;
     }
 
     @Override
-    public boolean isSuccess() {
-        return success;
+    public String getToken() {
+        return null;
     }
 
     @Override
-    public String getToken() {
-        return null;  // Typically, no token on error
+    public boolean isSuccess() {
+        return false;
     }
 }

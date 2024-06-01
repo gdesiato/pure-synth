@@ -37,7 +37,7 @@ public class UserController {
 
         if (customUserDetailsOpt.isPresent()) {
             CustomUserDetails customUserDetails = customUserDetailsOpt.get();
-            User user = customUserDetails.getUser();
+            User user = customUserDetails.user();
             UserResponseDTO userDto = new UserResponseDTO(user.getId(), user.getEmail());
             return ResponseEntity.ok(userDto);
         } else {

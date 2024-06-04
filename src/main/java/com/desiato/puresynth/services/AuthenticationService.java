@@ -2,7 +2,6 @@ package com.desiato.puresynth.services;
 
 import com.desiato.puresynth.dtos.AuthenticationRequestDTO;
 import com.desiato.puresynth.dtos.PureSynthToken;
-import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
@@ -10,7 +9,6 @@ import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +57,7 @@ public class AuthenticationService {
         Optional<Session> sessionOpt = sessionRepository.findById(pureSynthToken.value());
 
         if (sessionOpt.isEmpty()) {
-            logger.warn("Token authentication failed: Session not found for token {}");
+            logger.warn("Token authentication failed: Session not found for token");
             return false;
         }
 

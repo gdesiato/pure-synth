@@ -13,8 +13,6 @@ public class AudioRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    //private WaveformType waveformType;
     private double frequency;
     private double duration;
 

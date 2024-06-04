@@ -1,7 +1,6 @@
 package com.desiato.puresynth.configurations;
 
 import com.desiato.puresynth.dtos.PureSynthToken;
-import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.services.AuthenticationService;
 import jakarta.servlet.FilterChain;

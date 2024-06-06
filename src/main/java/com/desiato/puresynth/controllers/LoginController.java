@@ -4,8 +4,6 @@ import com.desiato.puresynth.dtos.*;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +22,8 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) throws AuthenticationException {
-        PureSynthToken pureSynthToken = authenticationService.authenticate(requestDTO)
-                .orElseThrow(() -> new BadCredentialsException("Unauthorized: Invalid credentials"));
+    public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) {
+        PureSynthToken pureSynthToken = authenticationService.authenticate(requestDTO);
         return ResponseEntity.ok(new LoginResponseDTO(pureSynthToken.value(), "success"));
     }
 }

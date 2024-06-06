@@ -7,8 +7,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,8 +26,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         this.authenticationService = authenticationService;
     }
 
-    private final Logger log = LoggerFactory.getLogger(AuthTokenFilter.class);
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -48,7 +44,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         try {
             PureSynthToken pureSynthToken = new PureSynthToken(tokenValue);
-            Optional<CustomUserDetails> userDetailsOptional = authenticationService.loadUserByToken(tokenValue);
+            Optional<CustomUserDetails> userDetailsOptional = authenticationService.findByToken(tokenValue);
 
             if (userDetailsOptional.isPresent()) {
                 UserDetails userDetails = userDetailsOptional.get();

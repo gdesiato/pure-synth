@@ -6,11 +6,9 @@ import com.desiato.puresynth.models.AuthenticatedUser;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,8 +32,7 @@ public class TestAuthenticationHelper {
 
         AuthenticationRequestDTO request = new AuthenticationRequestDTO(email, password);
 
-        Optional<PureSynthToken> optionalToken = authenticationService.authenticate(request);
-        PureSynthToken pureSynthToken = optionalToken.orElseThrow(() -> new RuntimeException("Authentication failed, no token obtained"));
+        PureSynthToken pureSynthToken = authenticationService.authenticate(request);
 
         return new AuthenticatedUser(existingUser, pureSynthToken);
     }

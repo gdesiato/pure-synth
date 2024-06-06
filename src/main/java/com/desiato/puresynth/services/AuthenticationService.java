@@ -8,56 +8,58 @@ import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
+@Slf4j
 public class AuthenticationService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private SessionRepository sessionRepository;
+    private final SessionRepository sessionRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+    AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, SessionRepository sessionRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.sessionRepository = sessionRepository;
+    }
 
-    public Optional<PureSynthToken> authenticate(AuthenticationRequestDTO request) {
-        logger.info("Attempting to authenticate user with email: {}", request.email());
+
+    public PureSynthToken authenticate(AuthenticationRequestDTO request) throws AuthenticationException {
+        log.info("Attempting to authenticate user with email: {}", request.email());
 
         User user = userRepository.findByEmail(request.email());
         if (user == null) {
-            logger.warn("Authentication failed: No user found for email: {}", request.email());
-            return Optional.empty();
+            log.warn("Authentication failed: No user found for email: {}", request.email());
+            throw new AuthenticationException("Authentication failed: No user found.") {};
         }
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            logger.warn("Authentication failed: Incorrect password for email: {}", request.email());
-            return Optional.empty();
+            log.warn("Authentication failed: Incorrect password for email: {}", request.email());
+            throw new AuthenticationException("Authentication failed: Incorrect password.") {};
         }
 
         String tokenValue = UUID.randomUUID().toString();
         Session newSession = new Session(tokenValue, user.getId());
         sessionRepository.save(newSession);
-        logger.info("Authentication succeeded and session created for email: {}", request.email());
+        log.info("Authentication succeeded and session created for email: {}", request.email());
 
-        return Optional.of(new PureSynthToken(tokenValue));
+        return new PureSynthToken(tokenValue);
     }
 
     public boolean isUserAuthenticated(PureSynthToken pureSynthToken) {
         Optional<Session> sessionOpt = sessionRepository.findById(pureSynthToken.value());
 
         if (sessionOpt.isEmpty()) {
-            logger.warn("Token authentication failed: Session not found for token");
+            log.warn("Token authentication failed: Session not found for token");
             return false;
         }
 
@@ -66,14 +68,14 @@ public class AuthenticationService {
         Optional<User> user = userRepository.findById(userId);
 
         if (user == null) {
-            logger.warn("Token authentication failed: No user found in session");
+            log.warn("Token authentication failed: No user found in session");
             return false;
         }
 
         return true;
     }
 
-    public Optional<CustomUserDetails> loadUserByToken(String token) {
+    public Optional<CustomUserDetails> findByToken(String token) {
         return sessionRepository.findById(token)
                 .map(Session::getUserId)
                 .flatMap(userRepository::findById)
@@ -82,9 +84,9 @@ public class AuthenticationService {
 
     @Transactional
     public void deleteUserSessions(Long userId) {
-        logger.info("Deleting sessions for user ID: {}", userId);
+        log.info("Deleting sessions for user ID: {}", userId);
         sessionRepository.deleteByUserId(userId);
-        logger.info("Deleted sessions for user ID: {}", userId);
+        log.info("Deleted sessions for user ID: {}", userId);
     }
 
 

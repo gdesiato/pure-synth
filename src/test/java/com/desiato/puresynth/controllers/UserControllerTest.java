@@ -28,7 +28,7 @@ public class UserControllerTest extends BaseTest {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
 
         mockMvc.perform(get("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.authToken()))
+                        .header("authToken", authenticatedUser.pureSynthToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(authenticatedUser.user().getId()))
                 .andExpect(jsonPath("$.email").value(authenticatedUser.user().getEmail()));
@@ -46,14 +46,14 @@ public class UserControllerTest extends BaseTest {
         """, newEmail);
 
         mockMvc.perform(put("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.authToken())
+                        .header("authToken", authenticatedUser.pureSynthToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(newEmail));
 
         mockMvc.perform(get("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.authToken()))
+                        .header("authToken", authenticatedUser.pureSynthToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(newEmail))
                 .andReturn();

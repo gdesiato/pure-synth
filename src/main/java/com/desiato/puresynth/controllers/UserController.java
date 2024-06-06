@@ -1,13 +1,10 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.dtos.UserResponseDTO;
-import com.desiato.puresynth.exceptions.InvalidTokenException;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,11 +26,9 @@ public class UserController {
         this.authenticationService = authService;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
     @GetMapping("/me")
     public ResponseEntity<?> getUserDetailsByToken(@RequestHeader("authToken") String token) {
-        Optional<CustomUserDetails> customUserDetailsOpt = authenticationService.loadUserByToken(token);
+        Optional<CustomUserDetails> customUserDetailsOpt = authenticationService.findByToken(token);
 
         if (customUserDetailsOpt.isPresent()) {
             CustomUserDetails customUserDetails = customUserDetailsOpt.get();

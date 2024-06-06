@@ -1,4 +1,4 @@
 package com.desiato.puresynth.dtos;
 
-public record LoginResponseDTO(String message, String token) {
+public record LoginResponseDTO(String token, String message) {
 }

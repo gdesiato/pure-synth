@@ -1,3 +1,4 @@
+-- Table structure for table `audio_request`
 DROP TABLE IF EXISTS `audio_request`;
 CREATE TABLE `audio_request` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -7,20 +8,13 @@ CREATE TABLE `audio_request` (
   PRIMARY KEY (`id`)
 );
 
+-- Table structure for table `user`
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-);
-
-DROP TABLE IF EXISTS `user_session`;
-CREATE TABLE `user_session` (
-    `token` VARCHAR(255) PRIMARY KEY,
-    `email` VARCHAR(255) NOT NULL,
-    `expiration` DATETIME,
-    `user_id` BIGINT,
-    FOREIGN KEY (`user_id`) REFERENCES `user`(`id`)
 );
 

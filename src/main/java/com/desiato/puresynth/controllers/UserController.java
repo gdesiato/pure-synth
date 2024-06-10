@@ -1,10 +1,11 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.dtos.UserResponseDTO;
-import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -20,19 +22,12 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationService authenticationService;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, AuthenticationService authService) {
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationService = authService;
-    }
-
     @GetMapping("/me")
-    public ResponseEntity<?> getUserDetailsByToken(@RequestHeader("authToken") String token) {
-        Optional<CustomUserDetails> customUserDetailsOpt = authenticationService.findByToken(token);
+    public ResponseEntity<?> getUserDetailsByToken(@RequestHeader("authToken") PureSynthToken pureSynthToken) {
+        Optional<User> userOpt = authenticationService.findUserByToken(pureSynthToken);
 
-        if (customUserDetailsOpt.isPresent()) {
-            CustomUserDetails customUserDetails = customUserDetailsOpt.get();
-            User user = customUserDetails.user();
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
             UserResponseDTO userDto = new UserResponseDTO(user.getId(), user.getEmail());
             return ResponseEntity.ok(userDto);
         } else {

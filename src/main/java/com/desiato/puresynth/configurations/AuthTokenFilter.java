@@ -44,7 +44,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         try {
             PureSynthToken pureSynthToken = new PureSynthToken(tokenValue);
-            Optional<CustomUserDetails> userDetailsOptional = authenticationService.findByToken(tokenValue);
+            Optional<CustomUserDetails> userDetailsOptional = authenticationService.findByToken(pureSynthToken);
 
             if (userDetailsOptional.isPresent()) {
                 UserDetails userDetails = userDetailsOptional.get();

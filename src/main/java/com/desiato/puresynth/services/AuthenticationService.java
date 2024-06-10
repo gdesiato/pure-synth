@@ -8,6 +8,7 @@ import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 @Slf4j
 public class AuthenticationService {
 
@@ -25,13 +27,6 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     private final SessionRepository sessionRepository;
-
-    AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, SessionRepository sessionRepository) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.sessionRepository = sessionRepository;
-    }
-
 
     public PureSynthToken authenticate(AuthenticationRequestDTO request) throws AuthenticationException {
         log.info("Attempting to authenticate user with email: {}", request.email());
@@ -55,31 +50,24 @@ public class AuthenticationService {
         return new PureSynthToken(tokenValue);
     }
 
-    public boolean isUserAuthenticated(PureSynthToken pureSynthToken) {
-        Optional<Session> sessionOpt = sessionRepository.findById(pureSynthToken.value());
-
-        if (sessionOpt.isEmpty()) {
-            log.warn("Token authentication failed: Session not found for token");
-            return false;
-        }
-
-        Session session = sessionOpt.get();
-        Long userId = session.getUserId();
-        Optional<User> user = userRepository.findById(userId);
-
-        if (user == null) {
-            log.warn("Token authentication failed: No user found in session");
-            return false;
-        }
-
-        return true;
+    public Optional<User> findUserByToken(PureSynthToken pureSynthToken) {
+        return sessionRepository.findById(pureSynthToken.value())
+                .map(Session::getUserId)
+                .flatMap(userRepository::findById);
     }
 
-    public Optional<CustomUserDetails> findByToken(String token) {
-        return sessionRepository.findById(token)
-                .map(Session::getUserId)
-                .flatMap(userRepository::findById)
-                .map(CustomUserDetails::new);
+    public Optional<CustomUserDetails> findByToken(PureSynthToken pureSynthToken) {
+        return findUserByToken(pureSynthToken).map(CustomUserDetails::new);
+    }
+
+    public boolean isUserAuthenticated(PureSynthToken pureSynthToken) {
+        Optional<User> user = findUserByToken(pureSynthToken);
+
+        if (user.isEmpty()) {
+            log.warn("Token authentication failed: No user found for token");
+            return false;
+        }
+        return true;
     }
 
     @Transactional

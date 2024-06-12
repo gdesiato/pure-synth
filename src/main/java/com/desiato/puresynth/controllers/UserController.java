@@ -3,15 +3,14 @@ package com.desiato.puresynth.controllers;
 import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.dtos.UserResponseDTO;
 import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.services.AuthenticationService;
+import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -20,19 +19,13 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationService authenticationService;
+    private final SessionService sessionService;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUserDetailsByToken(@RequestHeader("authToken") PureSynthToken pureSynthToken) {
-        Optional<User> userOpt = authenticationService.findUserByToken(pureSynthToken);
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            UserResponseDTO userDto = new UserResponseDTO(user.getId(), user.getEmail());
-            return ResponseEntity.ok(userDto);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token.");
-        }
+    public ResponseEntity<UserResponseDTO> getUserDetailsByToken(@RequestHeader("authToken") PureSynthToken pureSynthToken) {
+        return sessionService.findUserByToken(pureSynthToken)
+                .map(user -> ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getEmail())))
+                .orElseThrow(() -> new BadCredentialsException("Invalid or expired token."));
     }
 
     @GetMapping("/{id}")

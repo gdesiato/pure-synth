@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -23,59 +22,46 @@ import java.util.UUID;
 public class AuthenticationService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final SessionRepository sessionRepository;
+    private final SessionService sessionService;
 
-    public PureSynthToken authenticate(AuthenticationRequestDTO request) throws AuthenticationException {
+    public PureSynthToken authenticate(AuthenticationRequestDTO request) {
         log.info("Attempting to authenticate user with email: {}", request.email());
 
-        User user = userRepository.findByEmail(request.email());
-        if (user == null) {
-            log.warn("Authentication failed: No user found for email: {}", request.email());
-            throw new AuthenticationException("Authentication failed: No user found.") {};
-        }
+        User user = findUserOrThrow(request);
 
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            log.warn("Authentication failed: Incorrect password for email: {}", request.email());
-            throw new AuthenticationException("Authentication failed: Incorrect password.") {};
-        }
+        validatePassword(request, user);
 
-        String tokenValue = UUID.randomUUID().toString();
-        Session newSession = new Session(tokenValue, user.getId());
-        sessionRepository.save(newSession);
+        Session session = sessionService.createSession(user);
+        String tokenValue = session.getToken();
         log.info("Authentication succeeded and session created for email: {}", request.email());
 
         return new PureSynthToken(tokenValue);
     }
 
-    public Optional<User> findUserByToken(PureSynthToken pureSynthToken) {
-        return sessionRepository.findById(pureSynthToken.value())
-                .map(Session::getUserId)
-                .flatMap(userRepository::findById);
+    private void validatePassword(AuthenticationRequestDTO request, User user) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            log.warn("Authentication failed: Incorrect password for email: {}", request.email());
+            throw new AuthenticationException("Authentication failed: Incorrect password.") {};
+        }
     }
 
-    public Optional<CustomUserDetails> findByToken(PureSynthToken pureSynthToken) {
-        return findUserByToken(pureSynthToken).map(CustomUserDetails::new);
+    private User findUserOrThrow(AuthenticationRequestDTO request) {
+        User user = userRepository.findByEmail(request.email());
+        if (user == null) {
+            log.warn("Authentication failed: No user found for email: {}", request.email());
+            throw new AuthenticationException("Authentication failed: No user found.") {};
+        }
+        return user;
+    }
+
+    public Optional<CustomUserDetails> createUserDetails(PureSynthToken pureSynthToken) {
+        return sessionService.findUserByToken(pureSynthToken)
+                .map(CustomUserDetails::new);
     }
 
     public boolean isUserAuthenticated(PureSynthToken pureSynthToken) {
-        Optional<User> user = findUserByToken(pureSynthToken);
-
-        if (user.isEmpty()) {
-            log.warn("Token authentication failed: No user found for token");
-            return false;
-        }
-        return true;
+        return sessionService.findUserByToken(pureSynthToken).isPresent();
     }
-
-    @Transactional
-    public void deleteUserSessions(Long userId) {
-        log.info("Deleting sessions for user ID: {}", userId);
-        sessionRepository.deleteByUserId(userId);
-        log.info("Deleted sessions for user ID: {}", userId);
-    }
-
-
 }

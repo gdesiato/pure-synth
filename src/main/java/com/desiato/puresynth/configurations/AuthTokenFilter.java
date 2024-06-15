@@ -44,20 +44,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         try {
             PureSynthToken pureSynthToken = new PureSynthToken(tokenValue);
-            authenticationService.createUserDetails(pureSynthToken)
-                    .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()))
-                    .ifPresent(authentication -> {
-                        SecurityContextHolder.getContext().setAuthentication(authentication);
-                        try {
-                            filterChain.doFilter(request, response);
-                        } catch (IOException e) {
-                            log.error("IO exception occurred while processing the filter chain", e);
-                            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        } catch (ServletException e) {
-                            log.error("Servlet exception occurred while processing the filter chain", e);
-                            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                        }
-                    });
+            var authenticationDetails = authenticationService.createUserDetails(pureSynthToken)
+                    .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+            if (authenticationDetails.isPresent()) {
+                SecurityContextHolder.getContext().setAuthentication(authenticationDetails.get());
+                filterChain.doFilter(request, response);
+            }
         } catch (AuthenticationException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Unauthorized: Invalid token");

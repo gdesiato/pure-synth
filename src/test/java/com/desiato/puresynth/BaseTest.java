@@ -1,6 +1,9 @@
 package com.desiato.puresynth;
 
+import com.desiato.puresynth.configurations.AuthTokenFilter;
+import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
+import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,9 +22,17 @@ public class BaseTest {
     public UserService userService;
 
     @Autowired
+    public SessionRepository sessionRepository;
+
+    @Autowired
     public UserRepository userRepository;
 
     @Autowired
     public PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public AuthenticationService authService;
+
+    @Autowired
+    public AuthTokenFilter authTokenFilter;
 }

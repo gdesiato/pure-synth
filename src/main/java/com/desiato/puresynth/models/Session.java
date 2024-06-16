@@ -4,24 +4,22 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Data
+@Table(name = "user_session")
 @NoArgsConstructor
-public class User {
+public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email;
+    private String token;
 
     @Column(nullable = false)
-    private String password;
+    private Long userId;
 
-    public User(String email, String password) {
+    public Session(String tokenValue, Long id) {
     }
 }

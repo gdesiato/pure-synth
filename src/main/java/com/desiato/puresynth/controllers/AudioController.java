@@ -2,6 +2,7 @@ package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.models.AudioRequest;
 import com.desiato.puresynth.services.AudioService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
 
 import java.io.File;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/audio")
 public class AudioController {
@@ -25,8 +27,8 @@ public class AudioController {
     @Value("${audio.files.directory}")
     private String audioFilesDir;
 
-    @Autowired
-    private AudioService audioService;
+    private final AudioService audioService;
+
 
     @PostMapping("/generate")
     public ResponseEntity<?> generateAudio(@RequestBody AudioRequest request) {

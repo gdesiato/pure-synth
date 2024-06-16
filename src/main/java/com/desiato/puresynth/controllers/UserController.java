@@ -1,29 +1,31 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.dtos.PureSynthToken;
+import com.desiato.puresynth.dtos.UserResponseDTO;
 import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
+    private final SessionService sessionService;
 
-    @GetMapping
-    public String helloApi(){
-        return "hello api";
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getUserDetailsByToken(@RequestHeader("authToken") PureSynthToken pureSynthToken) {
+        return sessionService.findUserByToken(pureSynthToken)
+                .map(user -> ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getEmail())))
+                .orElseThrow(() -> new BadCredentialsException("Invalid or expired token."));
     }
 
     @GetMapping("/{id}")
@@ -40,6 +42,7 @@ public class UserController {
                     .status(HttpStatus.CONFLICT)
                     .body("User already exists");
         }
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         User createdUser = userService.saveUser(newUser);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }

@@ -2,7 +2,6 @@ package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.models.AuthenticatedUser;
-import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

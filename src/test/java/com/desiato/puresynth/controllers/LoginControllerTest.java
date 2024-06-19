@@ -1,18 +1,12 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.BaseTest;
-import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.services.AuthenticationService;
-import com.desiato.puresynth.services.UserService;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MvcResult;
 

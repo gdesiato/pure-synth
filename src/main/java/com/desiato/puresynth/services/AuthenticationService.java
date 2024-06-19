@@ -5,7 +5,6 @@ import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.models.CustomUserDetails;
 import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

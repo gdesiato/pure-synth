@@ -1,4 +1,4 @@
-CREATE TABLE `user_session` (
+CREATE TABLE IF NOT EXISTS `user_session` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `token` VARCHAR(255) NOT NULL,
   `user_id` BIGINT NOT NULL,

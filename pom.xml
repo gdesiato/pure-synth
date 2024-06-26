@@ -128,6 +128,15 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<configuration>
+					<url>jdbc:mysql://localhost:3307/puresynth</url>
+					<user>puresynth</user>
+					<password>puresynth</password>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

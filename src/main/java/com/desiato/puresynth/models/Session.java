@@ -20,6 +20,8 @@ public class Session {
     @Column(nullable = false)
     private Long userId;
 
-    public Session(String tokenValue, Long id) {
+    public Session(String tokenValue, Long userId) {
+        this.token = tokenValue;
+        this.userId = userId;
     }
 }

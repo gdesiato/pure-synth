@@ -26,13 +26,34 @@ public class AuthenticationService {
     public PureSynthToken authenticate(AuthenticationRequestDTO request) {
         log.info("Attempting to authenticate user with email: {}", request.email());
 
-        User user = findUserOrThrow(request);
+        User user;
+        try {
+            user = findUserOrThrow(request);
+            log.info("User found: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Error finding user: {}", e.getMessage(), e);
+            throw e;
+        }
 
-        validatePassword(request, user);
+        try {
+            validatePassword(request, user);
+            log.info("Password validation successful for email: {}", request.email());
+        } catch (Exception e) {
+            log.error("Error validating password: {}", e.getMessage(), e);
+            throw e;
+        }
 
-        Session session = sessionService.createSession(user);
+        Session session;
+        try {
+            session = sessionService.createSession(user);
+            log.info("Session created for user with email: {}", user.getEmail());
+        } catch (Exception e) {
+            log.error("Error creating session: {}", e.getMessage(), e);
+            throw e;
+        }
+
         String tokenValue = session.getToken();
-        log.info("Authentication succeeded and session created for email: {}", request.email());
+        log.info("Authentication succeeded and token generated for email: {}", request.email());
 
         return new PureSynthToken(tokenValue);
     }

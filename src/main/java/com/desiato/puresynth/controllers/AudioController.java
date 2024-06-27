@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 
 import java.io.File;
 
-@AllArgsConstructor
 @RestController
 @RequestMapping("/api/audio")
 public class AudioController {
@@ -28,6 +27,9 @@ public class AudioController {
 
     private final AudioService audioService;
 
+    public AudioController(AudioService audioService) {
+        this.audioService = audioService;
+    }
 
     @PostMapping("/generate")
     public ResponseEntity<?> generateAudio(@RequestBody AudioRequest request) {

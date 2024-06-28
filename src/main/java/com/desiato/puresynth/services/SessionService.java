@@ -21,14 +21,18 @@ public class SessionService {
     private final UserRepository userRepository;
 
     public Session createSession(User user) {
+        if (user.getEmail() == null) {
+            throw new IllegalStateException("User email must not be null");
+        }
         String tokenValue = UUID.randomUUID().toString();
         Session newSession = new Session(tokenValue, user.getId());
         log.info("Token to be assigned: {}", tokenValue);
         log.info("User ID to be assigned: {}", user.getId());
         try {
             sessionRepository.save(newSession);
+            log.info("Session id: " + newSession.getId());
             log.info("Token of newSession: " + newSession.getToken());
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Error saving session: " + e.getMessage(), e);
             throw e;
         }

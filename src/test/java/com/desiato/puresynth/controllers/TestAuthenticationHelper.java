@@ -37,7 +37,15 @@ public class TestAuthenticationHelper {
         return new AuthenticatedUser(existingUser, pureSynthToken);
     }
 
-    private String generateUniqueEmail() {
+    public User createAndPersistUser() throws Exception {
+        String email = generateUniqueEmail();
+        String password = "password123";
+        String encodedPassword = passwordEncoder.encode(password);
+
+        return userService.createUser(email, encodedPassword);
+    }
+
+    public String generateUniqueEmail() {
         return "user_" + UUID.randomUUID().toString() + "@example.com";
     }
 }

@@ -20,14 +20,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class LoginControllerTest extends BaseTest {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     private static final Logger logger = LoggerFactory.getLogger(LoginControllerTest.class);
 
     @Test
     public void authenticateUser_WhenPasswordIsInvalid_ShouldReturnUnauthorized() throws Exception {
-        String uniqueEmail = generateUniqueEmail();
+        String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String validPassword = "password123";
         userService.createUser(uniqueEmail, passwordEncoder.encode(validPassword));
 
@@ -48,7 +45,7 @@ public class LoginControllerTest extends BaseTest {
 
     @Test
     public void authenticateUser_WhenCredentialsAreValid_ShouldAuthenticateSuccessfully() throws Exception {
-        String uniqueEmail = generateUniqueEmail();
+        String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String password = "password123";
 
         userService.createUser(uniqueEmail, passwordEncoder.encode(password));
@@ -79,7 +76,7 @@ public class LoginControllerTest extends BaseTest {
     @Test
     public void accessProtectedEndpoint_WithValidToken_ShouldAllowAccess() throws Exception {
         // Step 1: Create a valid user and authenticate
-        String uniqueEmail = generateUniqueEmail();
+        String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String password = "password123";
         userService.createUser(uniqueEmail, passwordEncoder.encode(password));
 
@@ -116,9 +113,5 @@ public class LoginControllerTest extends BaseTest {
         mockMvc.perform(get("/api/user/me")
                         .header("authToken", "invalid_token"))
                 .andExpect(status().isUnauthorized());
-    }
-
-    private String generateUniqueEmail() {
-        return "user_" + UUID.randomUUID().toString() + "@example.com";
     }
 }

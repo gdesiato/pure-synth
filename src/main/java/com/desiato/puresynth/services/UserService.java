@@ -2,6 +2,7 @@ package com.desiato.puresynth.services;
 
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,4 @@ public class UserService {
         userRepository.save(newUser);
         return newUser;
     }
-
 }

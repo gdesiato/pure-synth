@@ -12,6 +12,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/user")
@@ -37,7 +39,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<Object> createUser(@RequestBody User newUser) {
-        if (userService.findByEmail(newUser.getEmail()) != null) {
+        if (userService.findByEmail(newUser.getEmail()).isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body("User already exists");

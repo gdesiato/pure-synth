@@ -3,17 +3,13 @@ package com.desiato.puresynth.controllers;
 import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.models.AuthenticatedUser;
 import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
-import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 public class UserControllerTest extends BaseTest {
@@ -70,8 +66,7 @@ public class UserControllerTest extends BaseTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.email").value(uniqueEmail))
-                .andDo(print());
+                .andExpect(jsonPath("$.email").value(uniqueEmail));
     }
 
     @Test

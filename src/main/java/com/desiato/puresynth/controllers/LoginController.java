@@ -22,9 +22,7 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) {
-        log.info("Received login request for email: {}", requestDTO.email());
         PureSynthToken pureSynthToken = authenticationService.authenticate(requestDTO);
-        log.info("Authenticate method triggered");
         return ResponseEntity.ok(new LoginResponseDTO(pureSynthToken.value(), "success"));
     }
 }

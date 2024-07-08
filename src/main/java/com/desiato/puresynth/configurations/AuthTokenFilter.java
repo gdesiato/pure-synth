@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -24,6 +25,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     public AuthTokenFilter(AuthenticationService authenticationService){
         this.authenticationService = authenticationService;
     }
+
+    private static final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -57,6 +61,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublicEndpoint(String requestURI) {
-        return "/api/login".equals(requestURI) || "/api/user".equals(requestURI);
+        boolean isPublic = antPathMatcher.match("/api/login", requestURI) ||
+                antPathMatcher.match("/api/user", requestURI) ||
+                antPathMatcher.match("/api/user/**", requestURI);
+        logger.debug("Request URI: " + requestURI + " isPublic: " + isPublic);
+        return isPublic;
     }
 }

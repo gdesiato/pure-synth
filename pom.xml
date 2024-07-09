@@ -135,7 +135,6 @@
 					<url>jdbc:mysql://localhost:3307/puresynth</url>
 					<user>puresynth</user>
 					<password>puresynth</password>
-					<cleanDisabled>false</cleanDisabled>
 				</configuration>
 			</plugin>
 		</plugins>

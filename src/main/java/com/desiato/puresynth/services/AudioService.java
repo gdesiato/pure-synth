@@ -1,11 +1,10 @@
 package com.desiato.puresynth.services;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.*;
 import java.io.ByteArrayInputStream;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Service
@@ -15,29 +14,26 @@ public class AudioService {
     private static final int BITS_DEPTH = 16;
     private static final boolean BIG_ENDIAN = false;
 
-    @Value("${audio.files.directory}")
-    private String audioFilesDir;
-
-    public File generateSineWaveFile(double frequency, double durationInSeconds) throws IOException, LineUnavailableException {
-        // Generate the sine wave data. It creates an array of bytes
+    public byte[] generateSineWaveFile(double frequency, double durationInSeconds) throws IOException, LineUnavailableException {
+        // Generate the sine wave data as a byte array
         byte[] buffer = generateSineWaveBuffer(frequency, durationInSeconds);
 
-        // Create an audio file
-        File audioFile = new File(audioFilesDir, "sine_wave_" + frequency + "Hz.wav");
+        // Create an audio format
         AudioFormat format = new AudioFormat(SAMPLE_RATE, BITS_DEPTH, 1, true, BIG_ENDIAN);
-        try (AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buffer), format, buffer.length)) {
-            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, audioFile);
-        }
 
-        return audioFile;
+        // Use ByteArrayOutputStream to avoid saving to disk
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             AudioInputStream ais = new AudioInputStream(bais, format, buffer.length / 2)) {
+            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, baos);
+            return baos.toByteArray();
+        }
     }
 
-
     private byte[] generateSineWaveBuffer(double frequency, double durationInSeconds) {
-
         int bufferLength = (int) (durationInSeconds * SAMPLE_RATE);
 
-        // buffer is initialized to store the waveform data
+        // Buffer is initialized to store the waveform data
         byte[] buffer = new byte[bufferLength * 2]; // 2 bytes per frame for 16-bit samples
 
         for (int i = 0; i < bufferLength; i++) {

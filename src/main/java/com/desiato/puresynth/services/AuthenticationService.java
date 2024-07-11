@@ -24,15 +24,12 @@ public class AuthenticationService {
     private final SessionService sessionService;
 
     public PureSynthToken authenticate(AuthenticationRequestDTO request) {
-        log.info("Attempting to authenticate user with email: {}", request.email());
-
         User user = findUserOrThrow(request);
-
         validatePassword(request, user);
 
         Session session = sessionService.createSession(user);
+
         String tokenValue = session.getToken();
-        log.info("Authentication succeeded and session created for email: {}", request.email());
 
         return new PureSynthToken(tokenValue);
     }

@@ -1,7 +1,7 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.BaseTest;
-import com.desiato.puresynth.models.AuthenticatedUser;
+import com.desiato.puresynth.dtos.AuthenticatedUser;
 import com.desiato.puresynth.models.User;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public class UserControllerTest extends BaseTest {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
 
         mockMvc.perform(get("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.pureSynthToken()))
+                        .header("authToken", authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(authenticatedUser.user().getId()))
                 .andExpect(jsonPath("$.email").value(authenticatedUser.user().getEmail()));

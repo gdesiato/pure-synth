@@ -6,6 +6,7 @@ import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,7 +53,8 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
         return userService.getUserById(id)
-                .map(user -> {user.setEmail(userDetails.getEmail());
+                .map(user -> {
+                    user.setEmail(userDetails.getEmail());
                     User updatedUser = userService.saveUser(user);
                     return ResponseEntity.ok(updatedUser);
                 })

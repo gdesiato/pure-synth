@@ -2,16 +2,18 @@ package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.dtos.AuthenticatedUser;
-import com.desiato.puresynth.models.User;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Slf4j
 public class UserControllerTest extends BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginControllerTest.class);
@@ -72,16 +74,17 @@ public class UserControllerTest extends BaseTest {
     @Test
     public void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
         // Given
-        String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
-        User createdUser = userService.createUser(uniqueEmail, "password123");
-        Long userId = createdUser.getId();
+        AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
+        Long userId = authenticatedUser.user().getId();
 
         // When
-        mockMvc.perform(delete("/api/user/" + userId))
+        mockMvc.perform(delete("/api/user/" + userId)
+                        .header("authToken", authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isOk());
 
         // Then
-        mockMvc.perform(get("/api/user/" + userId))
+        mockMvc.perform(get("/api/user/" + userId)
+                        .header("authToken", authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isNotFound())
                 .andReturn();
     }

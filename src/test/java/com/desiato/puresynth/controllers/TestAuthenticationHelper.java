@@ -5,9 +5,11 @@ import com.desiato.puresynth.dtos.PureSynthToken;
 import com.desiato.puresynth.dtos.AuthenticatedUser;
 import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.services.AuthenticationService;
 import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,21 +17,13 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class TestAuthenticationHelper {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final PasswordEncoder passwordEncoder;
-
-    private final SessionService sessionService;
-
-    public TestAuthenticationHelper(UserService userService, AuthenticationService authenticationService,
-                                    PasswordEncoder passwordEncoder, SessionService sessionService) {
-        this.userService = userService;
-        this.authenticationService = authenticationService;
-        this.passwordEncoder = passwordEncoder;
-        this.sessionService = sessionService;
-    }
+    private final SessionRepository sessionRepository;
 
     public AuthenticatedUser createAndAuthenticateUser() throws Exception {
         String email = generateUniqueEmail();
@@ -46,6 +40,7 @@ public class TestAuthenticationHelper {
 
         return new AuthenticatedUser(existingUser, pureSynthToken);
     }
+
     public User createAndPersistUser() throws Exception {
         String email = generateUniqueEmail();
         String password = "password123";

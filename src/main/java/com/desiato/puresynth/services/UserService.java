@@ -1,6 +1,7 @@
 package com.desiato.puresynth.services;
 
 import com.desiato.puresynth.models.User;
+import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -31,8 +33,10 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    @Transactional
+    public void deleteUser(Long userId) {
+        sessionRepository.deleteByUserId(userId);
+        userRepository.deleteById(userId);
     }
 
     public User createUser(String email, String password) {

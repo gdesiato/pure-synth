@@ -2,14 +2,16 @@ package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.dtos.AuthenticatedUser;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.annotation.DirtiesContext;
 
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -71,10 +73,12 @@ public class UserControllerTest extends BaseTest {
                 .andExpect(jsonPath("$.email").value(uniqueEmail));
     }
 
+    @Transactional
     @Test
     public void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
         // Given
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
+        AuthenticatedUser authenticatedUser2 = testAuthenticationHelper.createAndAuthenticateUser();
         Long userId = authenticatedUser.user().getId();
 
         // When
@@ -84,6 +88,18 @@ public class UserControllerTest extends BaseTest {
 
         // Then
         mockMvc.perform(get("/api/user/" + userId)
+                        .header("authToken", authenticatedUser2.pureSynthToken().value()))
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    public void getUserById_shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+        AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
+        // Create a non-existent userId
+        Long nonExistentUserId = 9999L;
+
+        mockMvc.perform(get("/api/user/" + nonExistentUserId)
                         .header("authToken", authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isNotFound())
                 .andReturn();

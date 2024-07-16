@@ -34,9 +34,11 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long userId) {
-        sessionRepository.deleteByUserId(userId);
-        userRepository.deleteById(userId);
+    public void deleteUser(Long id) {
+        if (userRepository.existsById(id)) {
+            sessionRepository.deleteByUserId(id);
+            userRepository.deleteById(id);
+        }
     }
 
     public User createUser(String email, String password) {

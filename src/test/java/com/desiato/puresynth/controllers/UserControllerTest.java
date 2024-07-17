@@ -2,15 +2,18 @@ package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.dtos.AuthenticatedUser;
+import com.desiato.puresynth.models.Session;
+import com.desiato.puresynth.models.User;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -76,27 +79,26 @@ public class UserControllerTest extends BaseTest {
     @Transactional
     @Test
     public void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
-        // Given
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
-        AuthenticatedUser authenticatedUser2 = testAuthenticationHelper.createAndAuthenticateUser();
         Long userId = authenticatedUser.user().getId();
+        String token = authenticatedUser.pureSynthToken().value();
 
-        // When
+
         mockMvc.perform(delete("/api/user/" + userId)
                         .header("authToken", authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isOk());
 
-        // Then
-        mockMvc.perform(get("/api/user/" + userId)
-                        .header("authToken", authenticatedUser2.pureSynthToken().value()))
-                .andExpect(status().isNotFound())
-                .andReturn();
+        Optional<User> deletedUser = userRepository.findById(userId);
+        Optional<Session> deletedSession = sessionRepository.findByToken(token);
+
+        assertThat(deletedSession.isPresent()).isFalse();
+        assertThat(deletedUser.isPresent()).isFalse();
+
     }
 
     @Test
     public void getUserById_shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
-        // Create a non-existent userId
         Long nonExistentUserId = 9999L;
 
         mockMvc.perform(get("/api/user/" + nonExistentUserId)

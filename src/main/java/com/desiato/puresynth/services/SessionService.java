@@ -32,7 +32,7 @@ public class SessionService {
                 .map(Session::getUser);
     }
 
-    public void deleteUserSessions(Long userId) {
+    public void deleteByUserId(Long userId) {
         sessionRepository.deleteByUserId(userId);
     }
 }

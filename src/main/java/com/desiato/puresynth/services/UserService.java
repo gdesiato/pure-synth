@@ -16,6 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
+    private final SessionService sessionService;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -36,7 +37,7 @@ public class UserService {
     @Transactional
     public void deleteUser(Long id) {
         if (userRepository.existsById(id)) {
-            sessionRepository.deleteByUserId(id);
+            sessionService.deleteByUserId(id);
             userRepository.deleteById(id);
         }
     }

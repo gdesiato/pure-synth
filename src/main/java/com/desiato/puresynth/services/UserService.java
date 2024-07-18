@@ -15,7 +15,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final SessionRepository sessionRepository;
     private final SessionService sessionService;
 
     public List<User> getAllUsers() {

@@ -76,24 +76,21 @@ public class UserControllerTest extends BaseTest {
                 .andExpect(jsonPath("$.email").value(uniqueEmail));
     }
 
-    @Transactional
     @Test
     public void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
         Long userId = authenticatedUser.user().getId();
         String token = authenticatedUser.pureSynthToken().value();
 
-
         mockMvc.perform(delete("/api/user/" + userId)
-                        .header("authToken", authenticatedUser.pureSynthToken().value()))
-                .andExpect(status().isOk());
+                        .header("authToken", token))
+                .andExpect(status().isNoContent());
 
         Optional<User> deletedUser = userRepository.findById(userId);
         Optional<Session> deletedSession = sessionRepository.findByToken(token);
 
         assertThat(deletedSession.isPresent()).isFalse();
         assertThat(deletedUser.isPresent()).isFalse();
-
     }
 
     @Test

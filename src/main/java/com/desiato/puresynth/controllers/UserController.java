@@ -6,6 +6,7 @@ import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -33,7 +34,7 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return userService.getUserById(id)
-                .map(user -> ResponseEntity.ok(user))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -52,7 +53,8 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
         return userService.getUserById(id)
-                .map(user -> {user.setEmail(userDetails.getEmail());
+                .map(user -> {
+                    user.setEmail(userDetails.getEmail());
                     User updatedUser = userService.saveUser(user);
                     return ResponseEntity.ok(updatedUser);
                 })
@@ -60,11 +62,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(user -> {userService.deleteUser(id);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

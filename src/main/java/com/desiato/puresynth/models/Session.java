@@ -17,11 +17,12 @@ public class Session {
     @Column(nullable = false, unique = true)
     private String token;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Session(String tokenValue, Long userId) {
+    public Session(String tokenValue, User user) {
         this.token = tokenValue;
-        this.userId = userId;
+        this.user = user;
     }
 }

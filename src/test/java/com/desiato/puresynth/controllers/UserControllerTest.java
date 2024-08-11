@@ -21,8 +21,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 public class UserControllerTest extends BaseTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginControllerTest.class);
-
     @Test
     public void getUser_ShouldReturnUser() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
@@ -37,7 +35,7 @@ public class UserControllerTest extends BaseTest {
     @Test
     public void updateUser_ShouldUpdateUserAndReturnUpdatedUser() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
-        String newEmail = "newuser@example.com";
+        String newEmail = testAuthenticationHelper.generateUniqueEmail();
         String userJson = String.format("""
         {
             "email": "%s",

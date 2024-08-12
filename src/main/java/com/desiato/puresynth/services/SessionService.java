@@ -22,18 +22,17 @@ public class SessionService {
 
     public Session createSession(User user) {
         String tokenValue = UUID.randomUUID().toString();
-        Session newSession = new Session(tokenValue, user.getId());
+        Session newSession = new Session(tokenValue, user);
         sessionRepository.save(newSession);
         return newSession;
     }
 
     public Optional<User> findUserByToken(PureSynthToken pureSynthToken) {
-        return sessionRepository.findById(pureSynthToken.value())
-                .map(Session::getUserId)
-                .flatMap(userRepository::findById);
+        return sessionRepository.findByToken(pureSynthToken.value())
+                .map(Session::getUser);
     }
 
-    public void deleteUserSessions(Long userId) {
+    public void deleteByUserId(Long userId) {
         sessionRepository.deleteByUserId(userId);
     }
 }

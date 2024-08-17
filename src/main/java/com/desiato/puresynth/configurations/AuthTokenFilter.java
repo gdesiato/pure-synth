@@ -49,6 +49,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             if (authenticationDetails.isPresent()) {
                 SecurityContextHolder.getContext().setAuthentication(authenticationDetails.get());
                 filterChain.doFilter(request, response);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Unauthorized: Invalid token");
             }
         } catch (AuthenticationException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

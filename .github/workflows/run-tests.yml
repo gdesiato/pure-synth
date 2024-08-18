@@ -1,0 +1,48 @@
+name: Run tests
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: Set up Docker Compose
+        run: sudo apt-get -y install docker-compose
+
+      - name: Start Docker Compose services
+        run: docker-compose -f docker-compose.yml up -d
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if docker-compose exec db mysqladmin ping -h 127.0.0.1 -u puresynth --password=puresynth &> /dev/null; then
+              echo "MySQL is up and running"
+              break
+            fi
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
+      - name: Tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3308/puresynth
+          SPRING_DATASOURCE_USERNAME: puresynth
+          SPRING_DATASOURCE_PASSWORD: puresynth
+        run: mvn -B test --file pom.xml
+
+      - name: Stop Docker Compose services
+        run: docker-compose -f docker-compose.yml down

@@ -39,7 +39,7 @@ jobs:
 
       - name: Tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3308/puresynth
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3307/puresynth
           SPRING_DATASOURCE_USERNAME: puresynth
           SPRING_DATASOURCE_PASSWORD: puresynth
         run: mvn -B test --file pom.xml

@@ -40,7 +40,7 @@ public class LoginControllerTest extends BaseTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Unauthorized"));
+                .andExpect(jsonPath("$.message").value("Authentication failed. Please check your credentials and try again."));
     }
 
     @Test

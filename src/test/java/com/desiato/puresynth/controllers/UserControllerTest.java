@@ -4,25 +4,19 @@ import com.desiato.puresynth.BaseTest;
 import com.desiato.puresynth.dtos.AuthenticatedUser;
 import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@Slf4j
-public class UserControllerTest extends BaseTest {
+class UserControllerTest extends BaseTest {
 
     @Test
-    public void getUser_ShouldReturnUser() throws Exception {
+    void getUser_ShouldReturnUser() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
 
         mockMvc.perform(get("/api/user/" + authenticatedUser.user().getId())
@@ -33,7 +27,7 @@ public class UserControllerTest extends BaseTest {
     }
 
     @Test
-    public void updateUser_ShouldUpdateUserAndReturnUpdatedUser() throws Exception {
+    void updateUser_ShouldUpdateUserAndReturnUpdatedUser() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
         String newEmail = testAuthenticationHelper.generateUniqueEmail();
         String userJson = String.format("""
@@ -58,7 +52,7 @@ public class UserControllerTest extends BaseTest {
     }
 
     @Test
-    public void createUser_ShouldReturnCreatedUser() throws Exception {
+    void createUser_ShouldReturnCreatedUser() throws Exception {
         String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String newUserJson = String.format("""
     {
@@ -75,7 +69,7 @@ public class UserControllerTest extends BaseTest {
     }
 
     @Test
-    public void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
+    void deleteUser_ShouldDeleteUserAndReturnOk() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
         Long userId = authenticatedUser.user().getId();
         String token = authenticatedUser.pureSynthToken().value();
@@ -92,7 +86,7 @@ public class UserControllerTest extends BaseTest {
     }
 
     @Test
-    public void getUserById_shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+    void getUserById_shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
         AuthenticatedUser authenticatedUser = testAuthenticationHelper.createAndAuthenticateUser();
         Long nonExistentUserId = 9999L;
 

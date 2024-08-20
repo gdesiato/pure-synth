@@ -7,7 +7,6 @@ import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.services.AuthenticationService;
-import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

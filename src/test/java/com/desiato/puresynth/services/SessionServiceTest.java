@@ -5,7 +5,6 @@ import com.desiato.puresynth.models.Session;
 import com.desiato.puresynth.models.User;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 

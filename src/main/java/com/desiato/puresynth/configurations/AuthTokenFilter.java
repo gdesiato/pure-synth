@@ -24,9 +24,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
     private final AntPathMatcher antPathMatcher;
-    
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    final HttpServletResponse response,
+                                    final FilterChain filterChain)
             throws ServletException, IOException {
 
         String tokenValue = request.getHeader("authToken");
@@ -44,8 +46,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         try {
             PureSynthToken pureSynthToken = new PureSynthToken(tokenValue);
-            var authenticationDetails = authenticationService.createUserDetails(pureSynthToken)
-                    .map(userDetails -> new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+            var authenticationDetails = authenticationService
+                    .createUserDetails(pureSynthToken)
+                    .map(userDetails -> new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities())
+                    );
             if (authenticationDetails.isPresent()) {
                 SecurityContextHolder.getContext().setAuthentication(authenticationDetails.get());
                 filterChain.doFilter(request, response);

@@ -158,6 +158,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<version>3.5.0</version>
 				<configuration>
+					<configLocation>config/checkstyle/checkstyle.xml</configLocation>
 					<suppressionsLocation>config/checkstyle/suppressions.xml</suppressionsLocation>
 					<failOnViolation>true</failOnViolation>
 				</configuration>

@@ -25,7 +25,9 @@ public class UserController {
     private final SessionService sessionService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getUserDetailsByToken(@RequestHeader("authToken") PureSynthToken pureSynthToken) {
+    public ResponseEntity<UserResponseDTO> getUserDetailsByToken(
+            @RequestHeader("authToken") PureSynthToken pureSynthToken) {
+
         return sessionService.findUserByToken(pureSynthToken)
                 .map(user -> ResponseEntity.ok(new UserResponseDTO(user.getId(), user.getEmail())))
                 .orElseThrow(() -> new BadCredentialsException("Invalid or expired token."));

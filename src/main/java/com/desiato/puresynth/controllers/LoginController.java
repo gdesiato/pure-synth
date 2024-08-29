@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/login")
 public class LoginController {
 
-    private final UserService userService;
     private final AuthenticationService authenticationService;
 
     @PostMapping
-    public ResponseEntity<LoginResponseDTO> authenticateUser(@RequestBody AuthenticationRequestDTO requestDTO) {
+    public ResponseEntity<LoginResponseDTO> authenticateUser(
+            @RequestBody AuthenticationRequestDTO requestDTO) {
         PureSynthToken pureSynthToken = authenticationService.authenticate(requestDTO);
         return ResponseEntity.ok(new LoginResponseDTO(pureSynthToken.value(), "success"));
     }

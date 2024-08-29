@@ -14,7 +14,11 @@ public class AudioService {
     private static final int BITS_DEPTH = 16;
     private static final boolean BIG_ENDIAN = false;
 
-    public byte[] generateSineWaveFile(double frequency, double durationInSeconds) throws IOException, LineUnavailableException {
+    public byte[] generateSineWaveFile(
+            double frequency,
+            double durationInSeconds)
+            throws IOException {
+
         // Generate the sine wave data as a byte array
         byte[] buffer = generateSineWaveBuffer(frequency, durationInSeconds);
 

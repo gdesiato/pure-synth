@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorLoginResponseDTO> handleAuthenticationException(AuthenticationException e) {
-        ErrorLoginResponseDTO response = new ErrorLoginResponseDTO("Authentication failed. Please check your credentials and try again.");
+    public ResponseEntity<ErrorLoginResponseDTO> handleAuthenticationException(
+            AuthenticationException e) {
+        ErrorLoginResponseDTO response = new ErrorLoginResponseDTO(
+                "Authentication failed. Please check your credentials and try again.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorLoginResponseDTO> handleInvalidTokenException(BadCredentialsException e) {
-        ErrorLoginResponseDTO response = new ErrorLoginResponseDTO("Unauthorized: Invalid or missing token");
+    public ResponseEntity<ErrorLoginResponseDTO> handleInvalidTokenException(
+            BadCredentialsException e) {
+        ErrorLoginResponseDTO response = new ErrorLoginResponseDTO(
+                "Unauthorized: Invalid or missing token");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }

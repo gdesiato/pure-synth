@@ -16,13 +16,14 @@ public class SecurityConfig {
     private AuthTokenFilter authTokenFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/user").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authTokenFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable());
 
         return http.build();

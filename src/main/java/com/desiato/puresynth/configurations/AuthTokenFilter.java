@@ -26,9 +26,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private final AntPathMatcher antPathMatcher;
 
     @Override
-    protected void doFilterInternal(final HttpServletRequest request,
-                                    final HttpServletResponse response,
-                                    final FilterChain filterChain)
+    protected void doFilterInternal(
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final FilterChain filterChain)
             throws ServletException, IOException {
 
         String tokenValue = request.getHeader("authToken");

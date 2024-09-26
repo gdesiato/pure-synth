@@ -58,7 +58,7 @@ public class UserController {
             @PathVariable Long id,
             @RequestBody UserRequestDTO userRequestDTO) {
 
-        User updatedUser = userService.getUserById(id);
+        User updatedUser = userService.updateUser(id, userRequestDTO);
 
         UserResponseDTO userResponseDto = dtoMapper.toUserResponseDTO(updatedUser);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);

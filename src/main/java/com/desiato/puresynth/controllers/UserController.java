@@ -1,7 +1,9 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.dtos.PureSynthToken;
+import com.desiato.puresynth.dtos.UserRequestDTO;
 import com.desiato.puresynth.dtos.UserResponseDTO;
+import com.desiato.puresynth.mappers.DTOMapper;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
@@ -23,6 +25,7 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final SessionService sessionService;
+    private final DTOMapper dtoMapper;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getUserDetailsByToken(
@@ -34,33 +37,31 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        UserResponseDTO userResponseDTO = dtoMapper.toUserResponseDTO(user);
+        return ResponseEntity.ok(userResponseDTO);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody User newUser) {
-        if (userService.findByEmail(newUser.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("User already exists");
-        }
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
+
+        User newUser = new User(userRequestDTO.email(), passwordEncoder.encode(userRequestDTO.password()) );
         User createdUser = userService.saveUser(newUser);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO(createdUser.getId(), createdUser.getEmail());
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        return userService.getUserById(id)
-                .map(user -> {
-                    user.setEmail(userDetails.getEmail());
-                    User updatedUser = userService.saveUser(user);
-                    return ResponseEntity.ok(updatedUser);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponseDTO> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserRequestDTO userRequestDTO) {
+
+        User updatedUser = userService.getUserById(id);
+
+        UserResponseDTO userResponseDto = dtoMapper.toUserResponseDTO(updatedUser);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

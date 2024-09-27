@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class DTOMapper {
+public class UserMapper {
 
-    public UserResponseDTO toUserResponseDTO(User user) {
+    public UserResponseDTO toDTO(User user) {
 
         return new UserResponseDTO(
                 user.getId(),

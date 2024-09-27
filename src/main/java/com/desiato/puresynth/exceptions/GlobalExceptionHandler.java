@@ -26,9 +26,4 @@ public class GlobalExceptionHandler {
                 "Unauthorized: Invalid or missing token");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
 }

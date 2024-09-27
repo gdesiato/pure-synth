@@ -18,7 +18,7 @@ class LoginControllerTest extends BaseTest {
     void authenticateUser_WhenPasswordIsInvalid_ShouldReturnUnauthorized() throws Exception {
         String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String validPassword = "password123";
-        userService.createUser(uniqueEmail, passwordEncoder.encode(validPassword));
+        userService.createUser(uniqueEmail, validPassword);
 
         String invalidPassword = "invalidPassword";
         String json = """
@@ -40,7 +40,7 @@ class LoginControllerTest extends BaseTest {
         String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String password = "password123";
 
-        userService.createUser(uniqueEmail, passwordEncoder.encode(password));
+        userService.createUser(uniqueEmail, password);
 
         String loginJson = String.format("""
             {
@@ -65,7 +65,7 @@ class LoginControllerTest extends BaseTest {
         // Step 1: Create a valid user and authenticate
         String uniqueEmail = testAuthenticationHelper.generateUniqueEmail();
         String password = "password123";
-        userService.createUser(uniqueEmail, passwordEncoder.encode(password));
+        userService.createUser(uniqueEmail, password);
 
         String loginJson = String.format("""
             {

@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
@@ -45,7 +44,7 @@ public class UserController {
 
         User createdUser = userService.createUser(userRequestDTO.email(), userRequestDTO.password());
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO(createdUser.getId(), createdUser.getEmail());
+        UserResponseDTO userResponseDTO = dtoMapper.toDTO(createdUser);
         return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
     }
 
@@ -54,7 +53,7 @@ public class UserController {
             @PathVariable Long id,
             @RequestBody UserRequestDTO userRequestDTO) {
 
-        User updatedUser = userService.updateUserOrThrow(id, userRequestDTO);
+        User updatedUser = userService.updateUser(id, userRequestDTO);
 
         UserResponseDTO userResponseDto = dtoMapper.toDTO(updatedUser);
         return new ResponseEntity<>(userResponseDto, HttpStatus.OK);

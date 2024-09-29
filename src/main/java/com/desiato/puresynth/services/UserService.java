@@ -54,7 +54,7 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    public User updateUserOrThrow(Long id, UserRequestDTO userRequestDTO) {
+    public User updateUser(Long id, UserRequestDTO userRequestDTO) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + id + "not found"));
 

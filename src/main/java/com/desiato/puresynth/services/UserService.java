@@ -55,8 +55,7 @@ public class UserService {
     }
 
     public User updateUser(Long id, UserRequestDTO userRequestDTO) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + id + "not found"));
+        User existingUser = this.getUserByIdOrThrow(id);
 
         existingUser.setEmail(userRequestDTO.email());
         existingUser.setPassword(projectConfig.passwordEncoder().encode(userRequestDTO.password()));

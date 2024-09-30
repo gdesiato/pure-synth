@@ -1,19 +1,17 @@
 package com.desiato.puresynth.controllers;
 
 import com.desiato.puresynth.dtos.PureSynthToken;
+import com.desiato.puresynth.dtos.UserRequestDTO;
 import com.desiato.puresynth.dtos.UserResponseDTO;
+import com.desiato.puresynth.mappers.UserMapper;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @AllArgsConstructor
 @RestController
@@ -21,8 +19,8 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
     private final SessionService sessionService;
+    private final UserMapper dtoMapper;
 
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getUserDetailsByToken(
@@ -34,33 +32,31 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+
+        User user = userService.getUserByIdOrThrow(id);
+        UserResponseDTO userResponseDTO = dtoMapper.toDTO(user);
+        return ResponseEntity.ok(userResponseDTO);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody User newUser) {
-        if (userService.findByEmail(newUser.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("User already exists");
-        }
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        User createdUser = userService.saveUser(newUser);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
+
+        User createdUser = userService.createUser(userRequestDTO.email(), userRequestDTO.password());
+
+        UserResponseDTO userResponseDTO = dtoMapper.toDTO(createdUser);
+        return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        return userService.getUserById(id)
-                .map(user -> {
-                    user.setEmail(userDetails.getEmail());
-                    User updatedUser = userService.saveUser(user);
-                    return ResponseEntity.ok(updatedUser);
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponseDTO> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserRequestDTO userRequestDTO) {
+
+        User updatedUser = userService.updateUser(id, userRequestDTO);
+
+        UserResponseDTO userResponseDto = dtoMapper.toDTO(updatedUser);
+        return new ResponseEntity<>(userResponseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

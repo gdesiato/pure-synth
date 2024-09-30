@@ -21,15 +21,12 @@ import java.util.UUID;
 public class TestAuthenticationHelper {
     private final UserService userService;
     private final AuthenticationService authenticationService;
-    private final PasswordEncoder passwordEncoder;
-    private final SessionRepository sessionRepository;
 
     public AuthenticatedUser createAndAuthenticateUser() throws Exception {
         String email = generateUniqueEmail();
         String password = "password123";
-        String encodedPassword = passwordEncoder.encode(password);
 
-        User existingUser = userService.createUser(email, encodedPassword);
+        User existingUser = userService.createUser(email, password);
 
         AuthenticationRequestDTO request = new AuthenticationRequestDTO(existingUser.getEmail(), password);
 
@@ -43,9 +40,8 @@ public class TestAuthenticationHelper {
     public User createAndPersistUser() throws Exception {
         String email = generateUniqueEmail();
         String password = "password123";
-        String encodedPassword = passwordEncoder.encode(password);
 
-        return userService.createUser(email, encodedPassword);
+        return userService.createUser(email, password);
     }
 
     public String generateUniqueEmail() {

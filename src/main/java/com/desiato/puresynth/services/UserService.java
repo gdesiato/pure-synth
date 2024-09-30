@@ -1,8 +1,10 @@
 package com.desiato.puresynth.services;
 
+import com.desiato.puresynth.configurations.ProjectConfig;
+import com.desiato.puresynth.dtos.UserRequestDTO;
 import com.desiato.puresynth.models.User;
-import com.desiato.puresynth.repositories.SessionRepository;
 import com.desiato.puresynth.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final SessionService sessionService;
+    private final ProjectConfig projectConfig;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -23,6 +26,11 @@ public class UserService {
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    public User getUserByIdOrThrow(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " was not found"));
     }
 
     public User saveUser(User user) {
@@ -42,8 +50,16 @@ public class UserService {
     }
 
     public User createUser(String email, String password) {
-        User newUser = new User(email, password);
-        userRepository.save(newUser);
-        return newUser;
+        User newUser = new User(email, projectConfig.passwordEncoder().encode(password));
+        return userRepository.save(newUser);
+    }
+
+    public User updateUser(Long id, UserRequestDTO userRequestDTO) {
+        User existingUser = this.getUserByIdOrThrow(id);
+
+        existingUser.setEmail(userRequestDTO.email());
+        existingUser.setPassword(projectConfig.passwordEncoder().encode(userRequestDTO.password()));
+
+        return userRepository.save(existingUser);
     }
 }

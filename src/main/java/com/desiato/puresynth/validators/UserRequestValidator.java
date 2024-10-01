@@ -1,34 +1,36 @@
 package com.desiato.puresynth.validators;
 
 import com.desiato.puresynth.dtos.UserRequestDTO;
-import com.desiato.puresynth.exceptions.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Slf4j
 @Component
-public class UserRequestValidator {
+public class UserRequestValidator extends AbstractValidator<UserRequestDTO> {
 
-    public void validateUserRequestDto(UserRequestDTO userRequestDTO) {
-        List<String> errorMessages = new ArrayList<>();
+    @Override
+    public void validate(UserRequestDTO userRequestDTO) {
+
+        log.info("email value is " + userRequestDTO.email());
 
         if (userRequestDTO.email() != null) {
             if (userRequestDTO.email().isBlank()) {
-                errorMessages.add("Email cannot be blank");
+                addError("Email cannot be blank.");
             } else if (!userRequestDTO.email().contains("@")) {
-                errorMessages.add("Invalid email format");
+                addError("Invalid email format.");
             }
+        } else {
+            addError("Email cannot be null.");
         }
 
-        if (userRequestDTO.password() != null) {
-            if (userRequestDTO.password().isBlank()) {
-                errorMessages.add("Password cannot be blank");
-            }
+        if (userRequestDTO.password() != null && !userRequestDTO.password().isBlank()) {
+            log.info("Password is valid");
+        } else if (userRequestDTO.password() == null) {
+            addError("Password cannot be null.");
+        } else {
+            addError("Password cannot be blank.");
         }
 
-        if (!errorMessages.isEmpty()) {
-            throw new ValidationException(errorMessages);
-        }
+        checkForErrors();
     }
 }

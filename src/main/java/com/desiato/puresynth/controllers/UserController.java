@@ -44,7 +44,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
 
-        validator.validateUserRequestDto(userRequestDTO);
+        validator.validate(userRequestDTO);
 
         User createdUser = userService.createUser(userRequestDTO.email(), userRequestDTO.password());
 
@@ -57,7 +57,7 @@ public class UserController {
             @PathVariable Long id,
             @RequestBody UserRequestDTO userRequestDTO) {
 
-        validator.validateUserRequestDto(userRequestDTO);
+        validator.validate(userRequestDTO);
 
         User updatedUser = userService.updateUser(id, userRequestDTO);
 

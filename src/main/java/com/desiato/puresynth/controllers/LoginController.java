@@ -25,7 +25,7 @@ public class LoginController {
     public ResponseEntity<LoginResponseDTO> authenticateUser(
             @RequestBody AuthenticationRequestDTO requestDTO) {
 
-        validator.validateAuthenticationRequestDTO(requestDTO);
+        validator.validate(requestDTO);
 
         PureSynthToken pureSynthToken = authenticationService.authenticate(requestDTO);
         return ResponseEntity.ok(new LoginResponseDTO(pureSynthToken.value(), "success"));

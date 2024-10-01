@@ -9,6 +9,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.Map;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -31,5 +33,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Object> handleValidationException(ValidationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("errors", ex.getErrorMessages()));
     }
 }

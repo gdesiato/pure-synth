@@ -8,6 +8,7 @@ public class AuthenticationRequestValidator extends AbstractValidator<Authentica
 
     @Override
     public void validate(AuthenticationRequestDTO request) {
+        resetErrors();
 
         if (request.email() == null || request.email().isBlank()) {
             addError("Email cannot be blank.");

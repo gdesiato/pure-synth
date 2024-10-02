@@ -20,5 +20,9 @@ public abstract class AbstractValidator<T> {
         }
     }
 
+    public void resetErrors() {
+       errorMessages.clear();
+    }
+
     public abstract void validate(T request);
 }

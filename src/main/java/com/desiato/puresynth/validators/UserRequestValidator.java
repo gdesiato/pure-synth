@@ -10,6 +10,7 @@ public class UserRequestValidator extends AbstractValidator<UserRequestDTO> {
 
     @Override
     public void validate(UserRequestDTO userRequestDTO) {
+        resetErrors();
 
         log.info("email value is " + userRequestDTO.email());
 

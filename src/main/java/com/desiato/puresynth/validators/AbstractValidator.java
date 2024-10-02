@@ -8,21 +8,14 @@ import java.util.List;
 
 public abstract class AbstractValidator<T> {
 
-    private final List<ErrorMessage> errorMessages = new ArrayList<>();
+    protected abstract void validate(T request, List<ErrorMessage> errorMessages);
 
-    protected void addError(String errorMessage) {
-        errorMessages.add(new ErrorMessage(errorMessage));
-    }
+    public void validate(T request) {
+        List<ErrorMessage> errorMessages = new ArrayList<>();
+        validate(request, errorMessages);
 
-    protected void checkForErrors() {
         if (!errorMessages.isEmpty()) {
             throw new ValidationException(errorMessages);
         }
     }
-
-    public void resetErrors() {
-       errorMessages.clear();
-    }
-
-    public abstract void validate(T request);
 }

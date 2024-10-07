@@ -7,6 +7,7 @@ import com.desiato.puresynth.mappers.UserMapper;
 import com.desiato.puresynth.models.User;
 import com.desiato.puresynth.services.SessionService;
 import com.desiato.puresynth.services.UserService;
+import com.desiato.puresynth.validators.UserRequestValidator;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
     private final SessionService sessionService;
+    private final UserRequestValidator validator;
     private final UserMapper dtoMapper;
 
     @GetMapping("/me")
@@ -42,6 +44,8 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequestDTO) {
 
+        validator.validate(userRequestDTO);
+
         User createdUser = userService.createUser(userRequestDTO.email(), userRequestDTO.password());
 
         UserResponseDTO userResponseDTO = dtoMapper.toDTO(createdUser);
@@ -52,6 +56,8 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> updateUser(
             @PathVariable Long id,
             @RequestBody UserRequestDTO userRequestDTO) {
+
+        validator.validate(userRequestDTO);
 
         User updatedUser = userService.updateUser(id, userRequestDTO);
 

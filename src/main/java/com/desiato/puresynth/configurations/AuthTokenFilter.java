@@ -32,7 +32,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             final FilterChain filterChain)
             throws ServletException, IOException {
 
-        String tokenValue = request.getHeader("authToken");
+        // Check for Authorization header with Bearer token
+        String authHeader = request.getHeader("Authorization");
+        String tokenValue = null;
+
+        // Extract the token if it is in the Authorization header
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            tokenValue = authHeader.substring(7); // Remove the "Bearer " part
+        }
 
         if (isPublicEndpoint(request.getRequestURI())) {
             filterChain.doFilter(request, response);
@@ -41,7 +48,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         if (tokenValue == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized");
+            response.getWriter().write("Unauthorized: Missing token");
             return;
         }
 

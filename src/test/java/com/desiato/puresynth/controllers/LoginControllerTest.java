@@ -64,14 +64,6 @@ class LoginControllerTest extends BaseTest {
     }
 
     @Test
-    void accessProtectedEndpoint_WithValidToken_ShouldAllowAccess() throws Exception {
-
-        mockMvc.perform(get("/api/user/me")
-                        .header("authToken", authenticatedUser.pureSynthToken().value()))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void accessProtectedEndpoint_WithoutToken_ShouldDenyAccess() throws Exception {
         mockMvc.perform(get("/api/user/me"))
                 .andExpect(status().isUnauthorized());

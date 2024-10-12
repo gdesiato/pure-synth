@@ -29,7 +29,7 @@ class UserControllerTest extends BaseTest {
     void getUser_ShouldReturnUser() throws Exception {
 
         mockMvc.perform(get("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.pureSynthToken().value()))
+                        .header("Authorization", "Bearer " + authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(authenticatedUser.user().getId()))
                 .andExpect(jsonPath("$.email").value(authenticatedUser.user().getEmail()));
@@ -45,14 +45,14 @@ class UserControllerTest extends BaseTest {
         """, validEmail);
 
         mockMvc.perform(put("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.pureSynthToken().value())
+                        .header("Authorization", "Bearer " + authenticatedUser.pureSynthToken().value())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(validEmail));
 
         mockMvc.perform(get("/api/user/" + authenticatedUser.user().getId())
-                        .header("authToken", authenticatedUser.pureSynthToken().value()))
+                        .header("Authorization", "Bearer " + authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value(validEmail))
                 .andReturn();
@@ -80,7 +80,7 @@ class UserControllerTest extends BaseTest {
         String token = authenticatedUser.pureSynthToken().value();
 
         mockMvc.perform(delete("/api/user/" + userId)
-                        .header("authToken", token))
+                        .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
 
         Optional<User> deletedUser = userRepository.findById(userId);
@@ -95,7 +95,7 @@ class UserControllerTest extends BaseTest {
         Long nonExistentUserId = 9999L;
 
         mockMvc.perform(get("/api/user/" + nonExistentUserId)
-                        .header("authToken", authenticatedUser.pureSynthToken().value()))
+                        .header("Authorization", "Bearer " + authenticatedUser.pureSynthToken().value()))
                 .andExpect(status().isNotFound())
                 .andReturn();
     }

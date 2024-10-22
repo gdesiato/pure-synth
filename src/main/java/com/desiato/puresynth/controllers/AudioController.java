@@ -1,8 +1,14 @@
 package com.desiato.puresynth.controllers;
 
+import com.desiato.puresynth.models.AudioFile;
 import com.desiato.puresynth.models.AudioRequest;
 import com.desiato.puresynth.services.AudioService;
+import com.desiato.puresynth.services.FileStorageService;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ByteArrayResource;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,25 +20,36 @@ import org.springframework.web.bind.annotation.RestController;
 public final class AudioController {
 
     private final AudioService audioService;
+    private final FileStorageService fileStorageService;
 
-    @PostMapping("/generate")
-    public ResponseEntity<String> generateAudio(@RequestBody final AudioRequest request) {
-
+    @PostMapping
+    public ResponseEntity<?> generateAudio(@RequestBody final AudioRequest request) {
         try {
-            // Generate the audio file as a byte array
-            byte[] audioBytes = audioService.generateSineWaveFile(
+            AudioFile audioFile = audioService.generateAndSaveSineWaveFile(
                     request.getFrequency(),
                     request.getDuration());
 
-            String fileName = "sine_wave_" + request.getFrequency() + "Hz";
-
-            String filePath = audioService.saveAudioFile(audioBytes, fileName);
-
-            return ResponseEntity.ok("File saved at: " + filePath);
+            return ResponseEntity.ok("File generated: " + audioFile.fileName());
 
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(
-                    "Error generating audio: " + e.getMessage());
+            return ResponseEntity.internalServerError().body("Error generating audio: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{fileName}")
+    public ResponseEntity<Resource> retrieveAudio(@PathVariable String fileName) {
+        try {
+            AudioFile audioFile = fileStorageService.retrieveFile(fileName);
+
+            Resource fileResource = new ByteArrayResource(audioFile.data());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(fileResource);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
         }
     }
 }

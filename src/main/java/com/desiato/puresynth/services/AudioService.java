@@ -1,7 +1,8 @@
 package com.desiato.puresynth.services;
 
+import com.desiato.puresynth.models.AudioFile;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.*;
@@ -10,37 +11,42 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Slf4j
+@AllArgsConstructor
 @Service
 public class AudioService {
 
     private final FileStorageService fileStorageService;
 
-    @Autowired
-    public AudioService(FileStorageService fileStorageService) {
-        this.fileStorageService = fileStorageService;
+    public AudioFile generateAndSaveSineWaveFile(double frequency, double durationInSeconds) throws IOException {
+        AudioFile audioFile = generateSineWaveFile(frequency, durationInSeconds);
+
+        saveAudioFile(audioFile.data(), audioFile.fileName());
+
+        return audioFile;
     }
 
-    public byte[] generateSineWaveFile(double frequency, double durationInSeconds) throws IOException {
+    private AudioFile generateSineWaveFile(double frequency, double durationInSeconds) throws IOException {
         byte[] buffer = generateSineWaveBuffer(frequency, durationInSeconds);
 
-        AudioFormat format = new AudioFormat(
-                44100,
+        AudioFormat format = new AudioFormat(44100,
                 16,
                 1,
                 true,
                 false);
+
+        String fileName = "sine_wave_" + frequency + "Hz.wav";
 
         try (ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
              ByteArrayOutputStream baos = new ByteArrayOutputStream();
              AudioInputStream ais = new AudioInputStream(bais, format, buffer.length / 2)) {
 
             AudioSystem.write(ais, AudioFileFormat.Type.WAVE, baos);
-            return baos.toByteArray();
+
+            return new AudioFile(baos.toByteArray(), fileName, format);
         }
     }
 
     public String saveAudioFile(byte[] audioBytes, String fileName) throws IOException {
-        // Save the file using the FileStorageService (local or cloud storage)
         return fileStorageService.saveFile(audioBytes, fileName);
     }
 

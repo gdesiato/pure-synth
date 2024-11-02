@@ -1,8 +1,5 @@
 package com.desiato.puresynth.services;
 
-import com.desiato.puresynth.models.AudioFile;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.*;
@@ -10,55 +7,45 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-@Slf4j
-@AllArgsConstructor
 @Service
 public class AudioService {
 
-    private final FileStorageService fileStorageService;
+    private static final int SAMPLE_RATE = 44100;
+    private static final int BITS_DEPTH = 16;
+    private static final boolean BIG_ENDIAN = false;
 
-    public AudioFile generateAndSaveSineWaveFile(double frequency, double durationInSeconds) throws IOException {
-        AudioFile audioFile = generateSineWaveFile(frequency, durationInSeconds);
+    public byte[] generateSineWaveFile(
+            double frequency,
+            double durationInSeconds)
+            throws IOException {
 
-        saveAudioFile(audioFile.data(), audioFile.fileName());
-
-        return audioFile;
-    }
-
-    private AudioFile generateSineWaveFile(double frequency, double durationInSeconds) throws IOException {
+        // Generate the sine wave data as a byte array
         byte[] buffer = generateSineWaveBuffer(frequency, durationInSeconds);
 
-        AudioFormat format = new AudioFormat(44100,
-                16,
-                1,
-                true,
-                false);
+        // Create an audio format
+        AudioFormat format = new AudioFormat(SAMPLE_RATE, BITS_DEPTH, 1, true, BIG_ENDIAN);
 
-        String fileName = "sine_wave_" + frequency + "Hz.wav";
-
+        // Use ByteArrayOutputStream to avoid saving to disk
         try (ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
              ByteArrayOutputStream baos = new ByteArrayOutputStream();
              AudioInputStream ais = new AudioInputStream(bais, format, buffer.length / 2)) {
-
             AudioSystem.write(ais, AudioFileFormat.Type.WAVE, baos);
-
-            return new AudioFile(baos.toByteArray(), fileName, format);
+            return baos.toByteArray();
         }
     }
 
-    public String saveAudioFile(byte[] audioBytes, String fileName) throws IOException {
-        return fileStorageService.saveFile(audioBytes, fileName);
-    }
-
     private byte[] generateSineWaveBuffer(double frequency, double durationInSeconds) {
-        int bufferLength = (int) (durationInSeconds * 44100);
-        byte[] buffer = new byte[bufferLength * 2]; // 16-bit audio (2 bytes per sample)
+        int bufferLength = (int) (durationInSeconds * SAMPLE_RATE);
+
+        // Buffer is initialized to store the waveform data
+        byte[] buffer = new byte[bufferLength * 2]; // 2 bytes per frame for 16-bit samples
 
         for (int i = 0; i < bufferLength; i++) {
-            double angle = 2.0 * Math.PI * i * frequency / 44100;
+            double angle = 2.0 * Math.PI * i * frequency / SAMPLE_RATE;
             short sampleValue = (short) (Math.sin(angle) * Short.MAX_VALUE);
-            buffer[2 * i] = (byte) (sampleValue & 0xFF);          // Lower byte
-            buffer[2 * i + 1] = (byte) ((sampleValue >> 8) & 0xFF); // Upper byte
+
+            buffer[2 * i] = (byte) (sampleValue & 0xFF);
+            buffer[2 * i + 1] = (byte) ((sampleValue >> 8) & 0xFF);
         }
 
         return buffer;

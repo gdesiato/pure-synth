@@ -1,17 +1,14 @@
 package com.desiato.puresynth.controllers;
 
-import com.desiato.puresynth.models.AudioFile;
 import com.desiato.puresynth.models.AudioRequest;
 import com.desiato.puresynth.services.AudioService;
-import com.desiato.puresynth.services.FileStorageService;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ByteArrayResource;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
@@ -20,36 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 public final class AudioController {
 
     private final AudioService audioService;
-    private final FileStorageService fileStorageService;
 
-    @PostMapping
+    @PostMapping("/generate")
     public ResponseEntity<?> generateAudio(@RequestBody final AudioRequest request) {
         try {
-            AudioFile audioFile = audioService.generateAndSaveSineWaveFile(
+            byte[] audioBytes = audioService.generateSineWaveFile(
                     request.getFrequency(),
                     request.getDuration());
 
-            return ResponseEntity.ok("File generated: " + audioFile.fileName());
-
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error generating audio: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/{fileName}")
-    public ResponseEntity<Resource> retrieveAudio(@PathVariable String fileName) {
-        try {
-            AudioFile audioFile = fileStorageService.retrieveFile(fileName);
-
-            Resource fileResource = new ByteArrayResource(audioFile.data());
+            ByteArrayResource resource = new ByteArrayResource(audioBytes);
 
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(fileResource);
-
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"sine_wave_" +
+                                    request.getFrequency() + "Hz.wav\"")
+                    .contentType(MediaType.parseMediaType("audio/wav"))
+                    .body(resource);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.internalServerError().body(
+                    "Error generating audio: " +
+                            e.getMessage());
         }
     }
 }

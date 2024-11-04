@@ -36,7 +36,7 @@ public final class AudioController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                     "Error generating audio: " +
-                    e.getMessage());
+                            e.getMessage());
         }
     }
 }

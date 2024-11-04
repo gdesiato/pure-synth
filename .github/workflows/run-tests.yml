@@ -37,6 +37,9 @@ jobs:
             sleep 2
           done
 
+      - name: Clear Maven Cache
+        run: mvn clean
+
       - name: Tests
         env:
           SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3307/puresynth

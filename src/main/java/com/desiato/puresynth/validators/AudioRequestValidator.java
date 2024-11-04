@@ -1,16 +1,16 @@
 package com.desiato.puresynth.validators;
 
-import com.desiato.puresynth.dtos.AudioRequestDTO;
+import com.desiato.puresynth.dtos.GenerateAudioRequestDTO;
 import com.desiato.puresynth.exceptions.ErrorMessage;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class AudioRequestValidator extends AbstractValidator<AudioRequestDTO>{
+public class AudioRequestValidator extends AbstractValidator<GenerateAudioRequestDTO>{
 
     @Override
-    protected void validate(AudioRequestDTO request, List<ErrorMessage> errorMessages) {
+    protected void validate(GenerateAudioRequestDTO request, List<ErrorMessage> errorMessages) {
 
         // Validate frequency
         if (request.frequency() <= 0) {
